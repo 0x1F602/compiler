@@ -83,12 +83,15 @@ char * generate_filename(char * source) {
     if (ts.index > 1) {
         int i = 0;
         while (i < ts.index) {
-            source_filename_body = strcat(source_filename_body, ts.tokens[i]);
+            strcat(source_filename_body, ts.tokens[i]);
             i++;
         }
     }
-    char * filename = strcat(source_filename_body, OUTPUT_EXTENSION);
-    return filename;
+    else {
+        strcat(source_filename_body, OUTPUT_EXTENSION);
+    }
+
+    return source_filename_body;
 }
 
 void handle_one_params(char * source) {
@@ -109,12 +112,29 @@ void handle_two_params(char * source, char * target) {
     source = check_or_add_extension(source, INPUT_EXTENSION);
     target = check_or_add_extension(target, OUTPUT_EXTENSION);
     printf("Source: %s, Target: %s\n", source, target);
-    //if (file_exists(target)) {
-        //backup_file(target);
-    //}
+    FILE * target_file; FILE * source_file;
     // open target
+    if (target_file = fopen(target,"r")) {
+        char * new_target;
+        strcpy(new_target, target);
+        strcat(new_target,".bak");
+        rename(target, new_target);
+    }
+    target_file = fopen(target, "w");
+
     // open source
+    source_file = fopen(source, "r");
     // write a few lines
+    int c;
+    do {
+        c = fgetc(source_file);
+        if (c != EOF) {
+            fputc(c, target_file); 
+        }
+    } while (c != EOF);
+
     // close_if_open target
+    close(target_file);
     // close_if_open source
+    close(source_file);
 }
