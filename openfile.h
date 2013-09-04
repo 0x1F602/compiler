@@ -7,16 +7,19 @@
 #define INPUT_EXTENSION 'IN'
 #define OUTPUT_EXTENSION 'OUT'
 
-typedef enum { READY, QUIT, ERROR } status_t;
-typedef struct {
-    FILE * in;          // this is our input file
-    FILE * out;         // this is our output file
-    status_t status;   // this is our status of the transaction
-} IOTransaction;
+typedef enum { READY, ERROR } status_t;
+
+const char * src_prompt = "Source filename: ";
+const char * tar_prompt = "Target filename: ";
 
 char * prompt_user(char *);
-void  handle_no_params(void);
-void  handle_one_params(char*);
-void  handle_two_params(char*,char*);
+status_t handle_no_params(void);
+status_t handle_one_params(char*);
+status_t handle_two_params(char*,char*);
+
+void check_or_add_extension(char *, char *);
+int file_exists(char *);
+void backup(FILE *);
+void close_if_open(FILE *);
 
 #endif
