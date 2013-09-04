@@ -1,5 +1,5 @@
-#include "openfile.h"
 #include <stdio.h>
+
 int main(int argc, char * argv[]) {
 	printf("\nUsage: %s [input_file [output_file]]\n", argv[0]);
     switch (argc) {

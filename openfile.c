@@ -6,7 +6,7 @@
  * char * entered = prompt_user(prompt);
  * assumes size of entered text is less than 32
  */
-char * prompt_user(char * message) {
+char * prompt_user(const char * message) {
     printf(message);
     char * input = (char *) malloc(32);
     //scanf("%31s", input);	wouldn't accept whitespace
