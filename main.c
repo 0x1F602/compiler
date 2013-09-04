@@ -1,7 +1,7 @@
-#include "openfile.c"
-
+#include "openfile.h"
+#include <stdio.h>
 int main(int argc, char * argv[]) {
-    printf("Usage: %s [input_file [output_file]]", argv[0]);
+	printf("\nUsage: %s [input_file [output_file]]\n", argv[0]);
     switch (argc) {
         case 3:
             handle_two_params(argv[1], argv[2]);

@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INPUT_EXTENSION 'IN'
-#define OUTPUT_EXTENSION 'OUT'
+#define INPUT_EXTENSION ".IN"
+#define OUTPUT_EXTENSION ".OUT"
 
 typedef enum { READY, ERROR } status_t;
 

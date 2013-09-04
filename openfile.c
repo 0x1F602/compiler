@@ -1,4 +1,5 @@
 #include "openfile.h"
+#include <string.h>
 
 /* usage:
  * char * prompt = "Prompt: ";
@@ -7,9 +8,13 @@
  */
 char * prompt_user(char * message) {
     printf(message);
-    size_t max_size = 32;
-    char * input = (char *) malloc(max_size);
-    scanf("%31s", input);
+    char * input = (char *) malloc(32);
+    //scanf("%31s", input);	wouldn't accept whitespace
+    gets(input);
+    if (strlen(input)==0)
+    {
+    	exit(1);
+    }
     return input;
 }
 
