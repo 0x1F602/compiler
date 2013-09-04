@@ -1,31 +1,28 @@
 #include "openfile.h"
 #include <string.h>
 
-/* usage:
- * char * prompt = "Prompt: ";
- * char * entered = prompt_user(prompt);
- * assumes size of entered text is less than 32
- */
-
 #define max_size 32
 #define max_tokens 5
 
 char * prompt_user(const char * message) {
     printf(message);
     char * input = (char *) malloc(max_size);
-    scanf("%31s", input);
+    //scanf("%[A-Za-z0-9 \.]s\n", input); // should use regex but askldjalskdja;sldfjk
+    fgets(input, max_size, stdin);
+    size_t len = strlen(input) - 1;
+    if (input[len]=='\n') {
+        input[len]='\0';
+    }
+    /* stole this solution from http://stackoverflow.com/a/2693827 */
     return input;
 }
 
-/* usage:
- * handle_no_params();
- */
-
 void handle_no_params(void) {
     char * src_filename = prompt_user(src_prompt);
-    if (strlen(src_filename) >= 0) {
+    if (strlen(src_filename) > 0) {
         handle_one_params(src_filename);
     }
+    free(src_filename);
 }
 
 tokened_string tokenize(char * string) {
@@ -57,24 +54,27 @@ char * find_extension(char * filename) {
     if (ts.index > 0) {
         extension = ts.tokens[ts.index];
     }
-    
+
+    free(ts.tokens); 
+
     return extension;
 }
 
 char * check_or_add_extension(char * filename, char * default_extension) {
-    char * orig_filename = (char *) malloc(32);
-    orig_filename = strcpy(orig_filename, filename);
     char * extension = find_extension(filename);
     //printf("Found extension from %s: %s\n", filename, extension);
+    char * new_filename = (char *) malloc(32);
+    strcpy(new_filename, filename);
+    sprintf(new_filename, "%s", filename);
     if (extension == NULL) {
-        strcat(filename, default_extension);
+        strcat(new_filename, default_extension);
     }
     else {
         //printf("%s %s\n\n", filename, extension);
-        sprintf(filename, "%s.%s", filename, extension);
+        sprintf(new_filename, "%s.%s", filename, extension);
     }
     //printf("Filename: %s\n", filename);
-    return filename;
+    return new_filename;
 }
 
 char * generate_filename(char * source) {
@@ -90,7 +90,7 @@ char * generate_filename(char * source) {
     else {
         strcat(source_filename_body, OUTPUT_EXTENSION);
     }
-
+    free(ts.tokens);
     return source_filename_body;
 }
 
@@ -102,11 +102,8 @@ void handle_one_params(char * source) {
     }
     target = check_or_add_extension(target, OUTPUT_EXTENSION);
     handle_two_params(source, target);
+    free(target);
 }
-
-/* usage:
- * handle_two_params(argv[1], argv[2]);
- */
 
 void handle_two_params(char * source, char * target) {
     source = check_or_add_extension(source, INPUT_EXTENSION);
@@ -115,26 +112,42 @@ void handle_two_params(char * source, char * target) {
     FILE * target_file; FILE * source_file;
     // open target
     if (target_file = fopen(target,"r")) {
-        char * new_target;
+        char * new_target = (char *) malloc(32);
         strcpy(new_target, target);
         strcat(new_target,".bak");
         rename(target, new_target);
+        free(new_target);
+        fclose(target_file);
     }
-    target_file = fopen(target, "w");
 
-    // open source
-    source_file = fopen(source, "r");
-    // write a few lines
-    int c;
-    do {
-        c = fgetc(source_file);
-        if (c != EOF) {
-            fputc(c, target_file); 
+    if (strcmp(target,source)!=0) {
+        // open source
+        source_file = fopen(source, "r");
+        if (source_file == NULL) {
+            printf("Source file doesn't exist.\n");
+            return; // sorry about the hacky solution but everyone realized it was due 9/4 on 9/4
         }
-    } while (c != EOF);
+        target_file = fopen(target, "w");
+        FILE * tempfile1 = fopen("tmp1", "w");
+        FILE * tempfile2 = fopen("tmp2", "w");
 
-    // close_if_open target
-    close(target_file);
-    // close_if_open source
-    close(source_file);
+        // write a few lines
+        int c;
+        do {
+            c = fgetc(source_file);
+            if (c != EOF) {
+                fputc(c, target_file); 
+            }
+        } while (c != EOF);
+
+        fclose(tempfile1);
+        fclose(tempfile2);
+        fclose(target_file);
+        fclose(source_file);
+    }
+    else {
+        printf("ERROR: Target can't be Source!\n");
+    }
+    
+    free(source); free(target);
 }
