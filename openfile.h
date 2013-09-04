@@ -9,6 +9,11 @@
 
 typedef enum { READY, ERROR } status_t;
 
+typedef struct {
+    char ** tokens;
+    unsigned short int index;
+} tokened_string;
+
 const char * src_prompt = "Source filename: ";
 const char * tar_prompt = "Target filename: ";
 
@@ -18,6 +23,8 @@ void handle_one_params(char*);
 void handle_two_params(char*,char*);
 
 char * check_or_add_extension(char *, char *);
+char * find_extension(char *);
+char * generate_filename(char *);
 int file_exists(char *);
 void backup(FILE *);
 void close_if_open(FILE *);
