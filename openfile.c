@@ -52,15 +52,28 @@ tokened_string tokenize(char * string) {
 
 char * find_extension(char * filename) {
     tokened_string ts = tokenize(filename);
-    char * extension = ts.tokens[ts.index]; 
+    char * extension = NULL;
+
+    if (ts.index > 0) {
+        extension = ts.tokens[ts.index];
+    }
+    
     return extension;
 }
 
 char * check_or_add_extension(char * filename, char * default_extension) {
+    char * orig_filename = (char *) malloc(32);
+    orig_filename = strcpy(orig_filename, filename);
     char * extension = find_extension(filename);
+    //printf("Found extension from %s: %s\n", filename, extension);
     if (extension == NULL) {
-        filename = strcat(filename, default_extension);
+        strcat(filename, default_extension);
     }
+    else {
+        //printf("%s %s\n\n", filename, extension);
+        sprintf(filename, "%s.%s", filename, extension);
+    }
+    //printf("Filename: %s\n", filename);
     return filename;
 }
 
@@ -84,6 +97,8 @@ void handle_one_params(char * source) {
     if (strlen(target) <= 0) {
         target = generate_filename(source);
     }
+    target = check_or_add_extension(target, OUTPUT_EXTENSION);
+    handle_two_params(source, target);
 }
 
 /* usage:
@@ -91,5 +106,15 @@ void handle_one_params(char * source) {
  */
 
 void handle_two_params(char * source, char * target) {
-
+    source = check_or_add_extension(source, INPUT_EXTENSION);
+    target = check_or_add_extension(target, OUTPUT_EXTENSION);
+    printf("Source: %s, Target: %s\n", source, target);
+    //if (file_exists(target)) {
+        //backup_file(target);
+    //}
+    // open target
+    // open source
+    // write a few lines
+    // close_if_open target
+    // close_if_open source
 }
