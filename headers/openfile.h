@@ -14,6 +14,13 @@ typedef struct {
     unsigned short int index;
 } tokened_string;
 
+typedef struct {
+    FILE * input;
+    FILE * output;
+    FILE * listing_file;
+    FILE * temp1;
+} openfile_data;
+
 const char * src_prompt = "Source filename: ";
 const char * tar_prompt = "Target filename: ";
 
