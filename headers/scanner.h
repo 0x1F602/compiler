@@ -33,4 +33,20 @@ typedef enum {
     ERROR
 } tokens;
 
+/* this is called once all the files are open and we get a line buffer in */
+token match_code_to_token(scanner_data *);
+
+/* int is the position in line_buffer to start at */
+
+token match_alpha(scanner_data *, int);
+token match_end(scanner_data *, int);
+token match_begin(scanner_data *, int);
+
+token match_numeric(token *, int);
+token match_error(token *, int);
+
+token match_symbol(token *, int);
+token match_comment(token *, int);
+token match_terminal_symbol(token *, int);
+
 #endif
