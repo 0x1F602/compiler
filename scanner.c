@@ -42,6 +42,7 @@ void scanner(openfile_data * of_d_ptr) {
         for (i = 0; i < s.t_index; i++) {
             //format from token and print to temp file
             token t = s.t[i];
+            //negative token number means it was a comment, edge case.
             if (t.token_number != -1) {
                 fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", t.token_number, t.token_type, t.buffer);
             }
@@ -215,22 +216,22 @@ token match_symbol(scanner_data * sp)
     strncat(t.buffer, sp->line_buffer + sp->line_index, 1);
 	if (t.buffer[0] == '(')
 	{
-		t.token_number=6;
+		t.token_number=LPAREN;
 		strcpy(t.token_type,"LPAREN");
 	}
 	else if (t.buffer[0] == ')')
 	{
-		t.token_number=7;
+		t.token_number=RPAREN;
 		strcpy(t.token_type,"RPAREN");
 	}	
 	else if (t.buffer[0] == ';')
 	{
-		t.token_number=8;
+		t.token_number=SEMICOLON;
 		strcpy(t.token_type,"SEMICOLON");
 	}
 	else if (t.buffer[0] == ',')
 	{
-		t.token_number=9;
+		t.token_number=COMMA;
 		strcpy(t.token_type,"COMMA");
 	}
 	else if (t.buffer[0] == ':')
@@ -238,7 +239,7 @@ token match_symbol(scanner_data * sp)
 		//get next character from line buffer
 		if (sp->line_buffer[sp->line_index+1] == '=')
 		{
-			t.token_number=10;
+			t.token_number=ASSIGNOP;
 			strcpy(t.token_type,"ASSIGNOP");
             strncpy(t.buffer + 1, sp->line_buffer + sp->line_index + 1, 1);
             sp->line_index++;
@@ -252,7 +253,7 @@ token match_symbol(scanner_data * sp)
 	}
 	else if (t.buffer[0] == '+')
 	{
-		t.token_number=11;
+		t.token_number=PLUSOP;
 		strcpy(t.token_type,"PLUSOP");
 	}
 	else if (t.buffer[0] == '-')
@@ -269,7 +270,7 @@ token match_symbol(scanner_data * sp)
 		}
 		else
 		{	
-			t.token_number=12;
+			t.token_number=MINUSOP;
 			strcpy(t.token_type,"MINUSOP");
 		}
 	}
@@ -284,6 +285,7 @@ token match_symbol(scanner_data * sp)
 
 token match_error(scanner_data * sp) {
     token t;
+    memset(t.buffer, '\0', MAX_SIZE);
     t.token_number = ERROR;
     strcpy(t.token_type, "ERROR");
     strncpy(t.buffer, sp->line_buffer + sp->line_index, 1);
