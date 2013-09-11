@@ -24,21 +24,30 @@ void scanner(openfile_data * of_d_ptr) {
     scanner_data * s_p = &s;
     // priming the loop
     s.line_buffer[0] = '\0';
+    int line_number = 0;
     while (fgets(s.line_buffer, MAX_SIZE, in) != NULL) {
+        line_number++;
         s.line_index = 0;
         match_code_to_token(s_p);
         int source_eof = feof(in);
+        //print to listing file if we got something otherwise forget it, revoke line number
+        if (s.t_index > 0) {
+            fprintf(of_d.listing_file, "%d\t%s", line_number, s.line_buffer);
+        }
+        else {
+            line_number--;
+        }
         //process tokens in t array
         int i;
         for (i = 0; i < s.t_index; i++) {
             //format from token and print to temp file
             token t = s.t[i];
             if (t.token_number != -1) {
-                printf("%s %s %d\n", t.token_type, t.buffer, t.token_number);
+                fprintf(of_d.temp1, "%s %s %d\n", t.token_type, t.buffer, t.token_number);
             }
             if (t.token_number == ERROR) {
                 // put this in the listing file via of_d_ptr
-                printf("\nERROR: %s\n", t.buffer);
+                fprintf(of_d.listing_file,"ERROR: %s\n", t.buffer);
             }
         }
         //watch out for accidentally setting feof on this in there
@@ -85,7 +94,7 @@ void match_code_to_token(scanner_data * s_p) {
                     //s_p->t[t_index] = match_numeric(s_p);
                 }
                 else {
-                    //s_p->t[t_index] = match_error(s_p);
+                    s_p->t[t_index] = match_error(s_p);
                 }
                 t_index++;
                 break;

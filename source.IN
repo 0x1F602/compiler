@@ -1,7 +1,7 @@
 begin
         variable varr123
     d:=A + B - c -- comment
-    d:zA
+    d:zA * quoi
     x111111
     
 
