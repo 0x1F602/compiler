@@ -1,5 +1,9 @@
 #include "headers/openfile.h"
 #include "headers/scanner.h"
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
 
 /* from stack overflow http://stackoverflow.com/a/16151299 */
 void toUpper(char *text, char *nText){
@@ -29,7 +33,13 @@ void scanner(openfile_data * of_d_ptr) {
         for (i = 0; i < s.t_index; i++) {
             //format from token and print to temp file
             token t = s.t[i];
-            printf("%s %s %d\n", t.token_type, t.buffer, t.token_number);
+            if (t.token_number != -1) {
+                printf("%s %s %d\n", t.token_type, t.buffer, t.token_number);
+            }
+            if (t.token_number == ERROR) {
+                // put this in the listing file via of_d_ptr
+                printf("\nERROR: %s\n", t.buffer);
+            }
         }
         //watch out for accidentally setting feof on this in there
         if (source_eof) {
@@ -41,6 +51,8 @@ void scanner(openfile_data * of_d_ptr) {
 
 void match_code_to_token(scanner_data * s_p) {
     token t;
+    
+    
     // while we still have characters..
     int t_index = 0;
     short unsigned int line_buffer_len = strlen(s_p->line_buffer);
@@ -80,6 +92,8 @@ void match_code_to_token(scanner_data * s_p) {
         // if starts with symbol, go there..
         // if starts with alpha..
         // if starts with int..
+    		//all characters non-alpha numeric should get sent
+    		//allows to catch invalid characters in symbol match too
         }
     }
     s_p->t_index = t_index;
@@ -139,19 +153,79 @@ token match_numeric(scanner_data * sp) {
     return t;
 }
 
-token match_symbol(scanner_data * sp) {
+token match_symbol(scanner_data * sp)
+{
     token t;
-    return t;
-}
-
-token match_comment(scanner_data * sp) {
-    token t;
-    return t;
-}
-
-token match_terminal_symbol(scanner_data * sp) {
-    token t;
-    return t;
+    memset(t.buffer, '\0', MAX_SIZE);
+    strncat(t.buffer, sp->line_buffer + sp->line_index, 1);
+	if (t.buffer[0] == '(')
+	{
+		t.token_number=6;
+		strcpy(t.token_type,"LPAREN");
+	}
+	else if (t.buffer[0] == '(')
+	{
+		t.token_number=7;
+		strcpy(t.token_type,"RPAREN");
+	}	
+	else if (t.buffer[0] == ';')
+	{
+		t.token_number=8;
+		strcpy(t.token_type,"SEMICOLON");
+	}
+	else if (t.buffer[0] == ',')
+	{
+		t.token_number=9;
+		strcpy(t.token_type,"COMMA");
+	}
+	else if (t.buffer[0] == ':')
+	{
+		//get next character from line buffer
+		if (sp->line_buffer[sp->line_index+1] == '=')
+		{
+			t.token_number=10;
+			strcpy(t.token_type,"ASSIGNOP");
+            strncpy(t.buffer + 1, sp->line_buffer + sp->line_index + 1, 1);
+            sp->line_index++;
+		}
+		else
+		{
+			//lexical error
+			t = match_error(sp);
+            sp->line_index--; //must do this because match_error shouldnt
+		}	
+	}
+	else if (t.buffer[0] == '+')
+	{
+		t.token_number=11;
+		strcpy(t.token_type,"PLUSOP");
+	}
+	else if (t.buffer[0] == '-')
+	{
+		//get next character from line buffer
+		if (sp->line_buffer[sp->line_index+1] == '-')
+		{
+			//place rest of line into listing file
+			//just skip it
+			while (sp->line_buffer[sp->line_index] != '\n') {
+                sp->line_index++;
+            }
+            t.token_number = -1; //ignore this in processing
+		}
+		else
+		{	
+			//putchar back
+			t.token_number=12;
+			strcpy(t.token_type,"MINUSOP");
+		}
+	}
+	else
+	{
+		//lexical error or potentially whitespace
+		t = match_error(sp);
+	}
+    sp->line_index++;
+	return t;
 }
 
 token match_error(scanner_data * sp) {

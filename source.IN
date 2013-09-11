@@ -1,5 +1,8 @@
 begin
         variable varr123
+    d:=A + B - c -- comment
+    d:zA
     x111111
+    
 
 end
