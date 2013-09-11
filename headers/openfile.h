@@ -3,11 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define INPUT_EXTENSION ".IN"
 #define OUTPUT_EXTENSION ".OUT"
-
-typedef enum { READY, ERROR } status_t;
 
 typedef struct {
     char ** tokens;
@@ -20,9 +19,6 @@ typedef struct {
     FILE * listing_file;
     FILE * temp1;
 } openfile_data;
-
-const char * src_prompt = "Source filename: ";
-const char * tar_prompt = "Target filename: ";
 
 char * prompt_user(const char *);
 void handle_no_params(void);

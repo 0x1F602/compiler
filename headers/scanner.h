@@ -1,6 +1,10 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define MAX_SIZE 128
 
 typedef struct {
@@ -33,6 +37,11 @@ typedef enum {
     ERROR
 } tokens;
 
+/* forward declared */
+struct openfile_data ;
+
+void scanner(openfile_data *);
+
 /* this is called once all the files are open and we get a line buffer in */
 token match_code_to_token(scanner_data *);
 
@@ -42,11 +51,11 @@ token match_alpha(scanner_data *, int);
 token match_end(scanner_data *, int);
 token match_begin(scanner_data *, int);
 
-token match_numeric(token *, int);
-token match_error(token *, int);
+scanner_data match_numeric(scanner_data *, int);
+scanner_data match_error(scanner_data *, int);
 
-token match_symbol(token *, int);
-token match_comment(token *, int);
-token match_terminal_symbol(token *, int);
+scanner_data match_symbol(scanner_data *, int);
+scanner_data match_comment(scanner_data *, int);
+scanner_data match_terminal_symbol(scanner_data *, int);
 
 #endif

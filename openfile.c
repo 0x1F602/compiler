@@ -1,8 +1,10 @@
-#include "openfile.h"
-#include <string.h>
+#include "headers/openfile.h"
 
 #define max_size 32
 #define max_tokens 5
+
+const char * src_prompt = "Source filename: ";
+const char * tar_prompt = "Target filename: ";
 
 char * prompt_user(const char * message) {
     printf(message);
@@ -131,14 +133,15 @@ void handle_two_params(char * source, char * target) {
         FILE * tempfile1 = fopen("tmp1", "w");
         FILE * tempfile2 = fopen("tmp2", "w");
 
-        // write a few lines
-        int c;
-        do {
-            c = fgetc(source_file);
-            if (c != EOF) {
-                fputc(c, target_file); 
-            }
-        } while (c != EOF);
+        // implementing agreed upon pseudocode
+    
+        openfile_data of_d;
+        of_d.input = source_file;
+        of_d.output = target_file;
+        of_d.temp1 = tempfile1;
+        of_d.listing_file = tempfile2;
+        openfile_data * of_d_ptr = &of_d;
+        scanner(of_d_ptr);
 
         fclose(tempfile1);
         fclose(tempfile2);
