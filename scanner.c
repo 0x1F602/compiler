@@ -55,9 +55,19 @@ token match_symbol(scanner_data * scanner_data , int a)
 	}
 	else if (strcmp(scanner_data->token_buffer,"-")==1)
 	{
-		t.token_number=12;
-		strcpy(t.token_type,"MINUSOP");
-		strcpy(t.buffer,"-");
+		//get next character from line buffer
+		/*if(next_char=="-")
+		{
+			//place rest of line into listing file
+		}
+		*/
+		else
+		{	
+			//putchar back
+			t.token_number=12;
+			strcpy(t.token_type,"MINUSOP");
+			strcpy(t.buffer,"-");
+		}
 	}
 	else
 	{
