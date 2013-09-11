@@ -24,7 +24,7 @@ void scanner(openfile_data * of_d_ptr) {
     scanner_data * s_p = &s;
     // priming the loop
     s.line_buffer[0] = '\0';
-    int line_number = 0;
+    int line_number = 0; int total_errors = 0;
     while (fgets(s.line_buffer, MAX_SIZE, in) != NULL) {
         line_number++;
         s.line_index = 0;
@@ -43,11 +43,12 @@ void scanner(openfile_data * of_d_ptr) {
             //format from token and print to temp file
             token t = s.t[i];
             if (t.token_number != -1) {
-                fprintf(of_d.temp1, "%s %s %d\n", t.token_type, t.buffer, t.token_number);
+                fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", t.token_number, t.token_type, t.buffer);
             }
             if (t.token_number == ERROR) {
                 // put this in the listing file via of_d_ptr
                 fprintf(of_d.listing_file,"ERROR: %s\n", t.buffer);
+                total_errors++;
             }
         }
         //watch out for accidentally setting feof on this in there
@@ -55,6 +56,8 @@ void scanner(openfile_data * of_d_ptr) {
             break;
         }
     }
+    fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", SCANEOF, "SCANEOF", "EOF");
+    fprintf(of_d.listing_file, "\n\nLexical errors.\t%d", total_errors);
     return;
 }
 
