@@ -131,7 +131,7 @@ void handle_two_params(char * source, char * target) {
         }
         target_file = fopen(target, "w");
         FILE * tempfile1 = fopen("tmp1", "w");
-        FILE * tempfile2 = fopen("tmp2", "w");
+        FILE * tempfile2 = fopen("listing_file", "w");
 
         // implementing agreed upon pseudocode
     
