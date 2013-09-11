@@ -73,6 +73,7 @@ token match_symbol(scanner_data * scanner_data , int a)
 	{
 		//lexical error or potentially whitespace
 	}
+	return t;
 }
 
 void scanner(openfile_data * of_d_ptr) {
