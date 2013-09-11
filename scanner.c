@@ -94,7 +94,7 @@ void match_code_to_token(scanner_data * s_p) {
                     s_p->t[t_index] = match_alpha(s_p); 
                 }
                 else if (isdigit(s_p->line_buffer[s_p->line_index])) {
-                    //s_p->t[t_index] = match_numeric(s_p);
+                    s_p->t[t_index] = match_numeric(s_p);
                 }
                 else {
                     s_p->t[t_index] = match_error(s_p);
@@ -157,11 +157,54 @@ token match_alpha(scanner_data * sp) {
         t.token_number = END;
         strcpy(t.token_type, "END");
     }
+    else if (strcmp(burner_buffer, "READ") == 0) {
+        t.token_number = READ;
+        strcpy(t.token_type, "READ");
+    }
+    else if (strcmp(burner_buffer, "WRITE") == 0) {
+        t.token_number = WRITE;
+        strcpy(t.token_type, "WRITE");
+    }
     return t;
 }
 
 token match_numeric(scanner_data * sp) {
     token t;
+    memset(t.buffer, '\0', MAX_SIZE);
+    // get the index
+    short unsigned int x = 0;
+    int i = sp->line_index;
+    // put this digit into the buffer
+    if (isdigit(sp->line_buffer[i])) {
+    	strncpy(t.buffer + x, sp->line_buffer + i, 1);
+        strcat(t.buffer, "\0");
+        i++; x++;
+    }
+    t.token_number= INTLITERAL;
+    strcpy(t.token_type,"INTLITERAL");
+    while (sp->line_buffer[i] != '\0' || sp->line_buffer[i] != '\n') {
+    //      get another character
+                    
+    //      if it's a digit,
+        if (isdigit(sp->line_buffer[i])) {
+    //          put it in the buffer
+            strncat(t.buffer + x, sp->line_buffer + i, 1);
+            x++;
+        }
+    //		if it's an alpha (lexical error)
+        else if (isalpha(sp->line_buffer[i]))
+        {
+        	t=match_error(sp);
+        }
+    //		else it's whitespace or symbol
+        else
+        {
+        	break;
+        }
+        i++;
+    }
+    sp->line_index = i;
+    
     return t;
 }
 
@@ -175,7 +218,7 @@ token match_symbol(scanner_data * sp)
 		t.token_number=6;
 		strcpy(t.token_type,"LPAREN");
 	}
-	else if (t.buffer[0] == '(')
+	else if (t.buffer[0] == ')')
 	{
 		t.token_number=7;
 		strcpy(t.token_type,"RPAREN");
@@ -226,7 +269,6 @@ token match_symbol(scanner_data * sp)
 		}
 		else
 		{	
-			//putchar back
 			t.token_number=12;
 			strcpy(t.token_type,"MINUSOP");
 		}
