@@ -51,11 +51,11 @@ token match_alpha(scanner_data *, int);
 token match_end(scanner_data *, int);
 token match_begin(scanner_data *, int);
 
-scanner_data match_numeric(scanner_data *, int);
-scanner_data match_error(scanner_data *, int);
+token match_numeric(scanner_data *, int);
+token match_error(scanner_data *, int);
 
-scanner_data match_symbol(scanner_data *, int);
-scanner_data match_comment(scanner_data *, int);
-scanner_data match_terminal_symbol(scanner_data *, int);
+token match_symbol(scanner_data *, int);
+token match_comment(scanner_data *, int);
+token match_terminal_symbol(scanner_data *, int);
 
 #endif
