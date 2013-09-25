@@ -19,12 +19,15 @@ char * prompt_user(const char * message) {
     return input;
 }
 
-void handle_no_params(void) {
+openfile_data handle_no_params(void) {
     char * src_filename = prompt_user(src_prompt);
+    openfile_data of_d;
     if (strlen(src_filename) > 0) {
-        handle_one_params(src_filename);
+        of_d = handle_one_params(src_filename);
     }
     free(src_filename);
+
+    return of_d;
 }
 
 tokened_string tokenize(char * string) {
@@ -96,21 +99,23 @@ char * generate_filename(char * source) {
     return source_filename_body;
 }
 
-void handle_one_params(char * source) {
+openfile_data handle_one_params(char * source) {
     source = check_or_add_extension(source, INPUT_EXTENSION);
     char * target = prompt_user(tar_prompt);
     if (strlen(target) <= 0) {
         target = generate_filename(source);
     }
     target = check_or_add_extension(target, OUTPUT_EXTENSION);
-    handle_two_params(source, target);
+    openfile_data ofd = handle_two_params(source, target);
     free(target);
+    return ofd;
 }
 
-void handle_two_params(char * source, char * target) {
+openfile_data handle_two_params(char * source, char * target) {
     source = check_or_add_extension(source, INPUT_EXTENSION);
     target = check_or_add_extension(target, OUTPUT_EXTENSION);
     printf("Source: %s, Target: %s\n", source, target);
+    openfile_data of_d;
     FILE * target_file; FILE * source_file;
     // open target
     if (target_file = fopen(target,"r")) {
@@ -127,7 +132,7 @@ void handle_two_params(char * source, char * target) {
         source_file = fopen(source, "r");
         if (source_file == NULL) {
             printf("Source file doesn't exist.\n");
-            return; // sorry about the hacky solution but everyone realized it was due 9/4 on 9/4
+            return of_d; // sorry about the hacky solution but everyone realized it was due 9/4 on 9/4
         }
         target_file = fopen(target, "w");
         FILE * tempfile1 = fopen("tmp1", "w");
@@ -135,22 +140,16 @@ void handle_two_params(char * source, char * target) {
 
         // implementing agreed upon pseudocode
     
-        openfile_data of_d;
         of_d.input = source_file;
         of_d.output = target_file;
         of_d.temp1 = tempfile1;
         of_d.listing_file = tempfile2;
-        openfile_data * of_d_ptr = &of_d;
-        scanner(of_d_ptr);
-
-        fclose(tempfile1);
-        fclose(tempfile2);
-        fclose(target_file);
-        fclose(source_file);
     }
     else {
         printf("ERROR: Target can't be Source!\n");
     }
     
     free(source); free(target);
+
+    return of_d;
 }
