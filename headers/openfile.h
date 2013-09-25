@@ -21,9 +21,9 @@ typedef struct {
 } openfile_data;
 
 char * prompt_user(const char *);
-void handle_no_params(void);
-void handle_one_params(char*);
-void handle_two_params(char*,char*);
+openfile_data handle_no_params(void);
+openfile_data handle_one_params(char*);
+openfile_data handle_two_params(char*,char*);
 
 char * check_or_add_extension(char *, char *);
 char * find_extension(char *);

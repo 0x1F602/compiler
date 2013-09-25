@@ -39,9 +39,6 @@ typedef enum {
     ERROR
 } tokens;
 
-/* forward declared */
-struct openfile_data ;
-
 void scanner(openfile_data *);
 
 /* this is called once all the files are open and we get a line buffer in */
