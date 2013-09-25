@@ -14,6 +14,12 @@ typedef struct {
     char buffer [128];
 } token;
 
+/* Adding a linked list type */
+typedef struct {
+    token t;
+    struct token_node * next;
+} token_node;
+
 typedef struct {
     int line_index;
     char line_buffer [MAX_SIZE];

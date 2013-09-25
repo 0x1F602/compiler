@@ -16,12 +16,23 @@ void toUpper(char *text, char *nText){
     }   
 }
 
-void scanner(openfile_data * of_d_ptr) {
+void addEnd(token_node * tn, token t) {
+    token_node * current;
+    if (tn.t == NULL) {
+       tn.t = t;  
+    }
+    else {
+
+    }
+}
+
+void scanner(openfile_data * of_d_ptr, token_node * head) {
     openfile_data of_d = *of_d_ptr;
     FILE * in = of_d.input;
     FILE * listing_file = of_d.listing_file;
     scanner_data s;
     scanner_data * s_p = &s;
+    token_node * current;
     // priming the loop
     s.line_buffer[0] = '\0';
     int line_number = 0; int total_errors = 0;
