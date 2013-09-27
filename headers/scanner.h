@@ -8,17 +8,14 @@
 
 #define MAX_SIZE 128
 
+struct token;
 typedef struct {
     short int token_number;
     char token_type [16];
     char buffer [128];
+    token * next;
 } token;
 
-/* Adding a linked list type */
-typedef struct {
-    token t;
-    struct token_node * next;
-} token_node;
 
 typedef struct {
     int line_index;
@@ -45,7 +42,7 @@ typedef enum {
     ERROR
 } tokens;
 
-void scanner(openfile_data *);
+void scanner(openfile_data *, token **);
 
 /* this is called once all the files are open and we get a line buffer in */
 void match_code_to_token(scanner_data *);

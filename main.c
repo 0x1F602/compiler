@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "headers/openfile.h"
+#include "headers/scanner.h"
 /* G4P1
  * Patrik Natali
  * Ian Wlodarczyk
@@ -32,7 +33,8 @@ openfile_data setup(int argc, char * argv[]) {
 
 void calculate(openfile_data of_d) {
     openfile_data * of_d_ptr = &of_d;
-    scanner(of_d_ptr);
+    token * token_head;
+    scanner(of_d_ptr, &token_head);
 }
 
 void teardown(openfile_data of_d) {

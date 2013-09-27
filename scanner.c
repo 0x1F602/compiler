@@ -1,6 +1,7 @@
 #include "headers/openfile.h"
 #include "headers/scanner.h"
 #include <stdio.h>
+#include <sys/queue.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -16,23 +17,14 @@ void toUpper(char *text, char *nText){
     }   
 }
 
-void addEnd(token_node * tn, token t) {
-    token_node * current;
-    if (tn.t == NULL) {
-       tn.t = t;  
-    }
-    else {
-
-    }
-}
-
-void scanner(openfile_data * of_d_ptr, token_node * head) {
+// returns pointer to head token in linked list
+void scanner(openfile_data * of_d_ptr, token ** token_head) {
     openfile_data of_d = *of_d_ptr;
+    token * current;
     FILE * in = of_d.input;
     FILE * listing_file = of_d.listing_file;
     scanner_data s;
     scanner_data * s_p = &s;
-    token_node * current;
     // priming the loop
     s.line_buffer[0] = '\0';
     int line_number = 0; int total_errors = 0;
@@ -53,6 +45,14 @@ void scanner(openfile_data * of_d_ptr, token_node * head) {
         for (i = 0; i < s.t_index; i++) {
             //format from token and print to temp file
             token t = s.t[i];
+            current = (token *)malloc(sizeof(token));
+            current->token_number = t.token_number;
+            // just figure out how to use memset and strlen here....
+            //current->token_type = strdup(t.token_type);
+            //current->buffer = strdup(t.buffer);
+            current->next = *token_head;
+            *token_head = current;
+            
             //negative token number means it was a comment, edge case.
             if (t.token_number != -1) {
                 fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", t.token_number, t.token_type, t.buffer);
@@ -68,6 +68,7 @@ void scanner(openfile_data * of_d_ptr, token_node * head) {
             break;
         }
     }
+    current = *token_head;
     fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", SCANEOF, "SCANEOF", "EOF");
     fprintf(of_d.listing_file, "\n\nLexical errors.\t%d", total_errors);
     return;
