@@ -45,12 +45,13 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
         for (i = 0; i < s.t_index; i++) {
             //format from token and print to temp file
             token t = s.t[i];
+            //printf("Inside scanner: %d\n", t.token_number);
             current = (token *)malloc(sizeof(token));
             current->token_number = t.token_number;
             // just figure out how to use memset and strlen here....
             //current->token_type = strdup(t.token_type);
             //current->buffer = strdup(t.buffer);
-            current->next = *token_head;
+            current->next = (struct token *)*token_head;
             *token_head = current;
             
             //negative token number means it was a comment, edge case.
@@ -68,7 +69,13 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
             break;
         }
     }
-    current = *token_head;
+
+    current = (token *) malloc(sizeof(token));
+    current->token_number = SCANEOF;
+    current->next = (struct token *)*token_head;
+    *token_head = current;
+    //printf("Inside scanner: %d\n", (*token_head)->token_number);
+
     fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", SCANEOF, "SCANEOF", "EOF");
     fprintf(of_d.listing_file, "\n\nLexical errors.\t%d", total_errors);
     return;
