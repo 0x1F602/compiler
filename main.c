@@ -14,6 +14,19 @@
  *           \/                   |__|          |__| 
  */
 
+// idea mostly from http://www.mytechinterviews.com/reverse-a-linked-list
+token * reverse(token * head) {
+    token * t1;
+    token * previous = NULL;
+    while(head != NULL) {
+        t1 = (token *)head->next;
+        head->next = (struct token *)previous;
+        previous = head;
+        head = t1;
+    }
+    return previous;
+}
+
 openfile_data setup(int argc, char * argv[]) {
     openfile_data ofd;
 	printf("\nUsage: %s [input_file [output_file]]\n", argv[0]);
@@ -33,8 +46,22 @@ openfile_data setup(int argc, char * argv[]) {
 
 void calculate(openfile_data of_d) {
     openfile_data * of_d_ptr = &of_d;
-    token * token_head;
-    scanner(of_d_ptr, &token_head);
+    token ** token_head_ptr;
+    *token_head_ptr = NULL;
+    scanner(of_d_ptr, token_head_ptr);
+    token * token_head = *token_head_ptr;
+    token_head = reverse(token_head);
+    /* testing the token linked list here */
+    token * current = (token *)token_head;
+    do {
+        printf("Token: %d\n", current->token_number);
+        if (current->next != NULL) {
+            current = (token *)current->next;
+        }
+        else {
+            current = NULL;
+        }
+    } while (current != NULL);
 }
 
 void teardown(openfile_data of_d) {

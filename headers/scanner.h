@@ -8,12 +8,11 @@
 
 #define MAX_SIZE 128
 
-struct token;
 typedef struct {
     short int token_number;
     char token_type [16];
     char buffer [128];
-    token * next;
+    struct token * next;
 } token;
 
 
