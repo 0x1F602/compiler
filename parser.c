@@ -22,8 +22,6 @@ int program(token * c)
 		c=(token *)c->next;
 		valid=statement_list(c);
 		
-		
-		
 		if (valid==1)
 		{
 			if(c->token_number == END)

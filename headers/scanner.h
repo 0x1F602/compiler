@@ -1,6 +1,7 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
+#include "openfile.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

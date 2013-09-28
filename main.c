@@ -46,7 +46,7 @@ openfile_data setup(int argc, char * argv[]) {
 
 void calculate(openfile_data of_d) {
     openfile_data * of_d_ptr = &of_d;
-    token ** token_head_ptr;
+    token ** token_head_ptr = malloc(sizeof(token *));
     *token_head_ptr = NULL;
     scanner(of_d_ptr, token_head_ptr);
     token * token_head = *token_head_ptr;
