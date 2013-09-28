@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "headers/openfile.h"
 #include "headers/scanner.h"
+#include "headers/parser.h"
+
 /* G4P1
  * Patrik Natali
  * Ian Wlodarczyk
@@ -44,6 +46,7 @@ openfile_data setup(int argc, char * argv[]) {
     return ofd;
 }
 
+
 void calculate(openfile_data of_d) {
     openfile_data * of_d_ptr = &of_d;
     token ** token_head_ptr = malloc(sizeof(token *));
@@ -53,15 +56,16 @@ void calculate(openfile_data of_d) {
     token_head = reverse(token_head);
     /* testing the token linked list here */
     token * current = (token *)token_head;
-    do {
-        printf("Token: %d\n", current->token_number);
-        if (current->next != NULL) {
-            current = (token *)current->next;
-        }
-        else {
-            current = NULL;
-        }
-    } while (current != NULL);
+    if(parser(current))
+    {
+    	//no errors
+    	printf("No semantic errors detected.");
+    }
+    else
+    {
+    	//syntax error somewhere
+    	printf("Semantic errors detected.");
+    }
 }
 
 void teardown(openfile_data of_d) {

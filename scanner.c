@@ -1,10 +1,16 @@
-#include "headers/openfile.h"
 #include "headers/scanner.h"
 #include <stdio.h>
-#include <sys/queue.h>
 #include <string.h>
 #include <ctype.h>
 
+// I feel so smart, I wrote this all by myself
+void mycopy(char * destination, char * source) {
+    int i = 0;
+    while (source[i] != '\0') {
+        destination[i] = source[i];
+        i++;
+    }
+}
 
 /* from stack overflow http://stackoverflow.com/a/16151299 */
 void toUpper(char *text, char *nText){
@@ -49,8 +55,8 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
             current = (token *)malloc(sizeof(token));
             current->token_number = t.token_number;
             // just figure out how to use memset and strlen here....
-            //current->token_type = strdup(t.token_type);
-            //current->buffer = strdup(t.buffer);
+            mycopy((char *)&(current->token_type), (char *)&(t.token_type));
+            mycopy((char *)&(current->buffer),  (char *)&(t.buffer));
             current->next = (struct token *)*token_head;
             *token_head = current;
             
