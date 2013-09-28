@@ -53,7 +53,15 @@ void calculate(openfile_data of_d) {
     token_head = reverse(token_head);
     /* testing the token linked list here */
     token * current = (token *)token_head;
-    do {
+    if(parser(*current))
+    {
+    	//no errors
+    }
+    else
+    {
+    	//syntax error somewhere
+    }
+/*    do {
         printf("Token: %d\n", current->token_number);
         if (current->next != NULL) {
             current = (token *)current->next;
@@ -62,6 +70,7 @@ void calculate(openfile_data of_d) {
             current = NULL;
         }
     } while (current != NULL);
+*/    
 }
 
 void teardown(openfile_data of_d) {

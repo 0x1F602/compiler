@@ -1,4 +1,4 @@
-#include "minunit.h"
+#include "headers/minunit.h"
 #include "openfile.c"
 
 /* taken from http://www.jera.com/techinfo/jtns/jtn002.html */
