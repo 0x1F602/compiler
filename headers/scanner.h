@@ -15,6 +15,7 @@ typedef struct {
     struct token * next;
 } token;
 
+token * current;
 
 typedef struct {
     int line_index;

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include "scanner.h"
 
-int parser(*token head)
+int parser()
 {
-	if(program(*head))
+	if(program())
 	{
 		return 1;	//program syntax valid
 	}
@@ -14,18 +14,17 @@ int parser(*token head)
 	
 }
 
-int program(*token current)
+int program()
 {
 	int valid;
 	
 	if(strcmp(current->token_type,"BEGIN")==0)
 	{
 		current=(token *)current->next;
-		valid=statement_list(*current);
+		valid=statement_list(t);
 		
 		
 		
-		//not sure if current is changed in other functions whether it will change here too...
 		if (valid==1)
 		{
 			if(strcmp(current->token_type,"END")==0)
@@ -49,10 +48,10 @@ int program(*token current)
 	}
 }
 
-int statement_list(*token current)
+int statement_list()
 {
 	int count=0;
-	while(statement(*current)==1)
+	while(statement()==1)
 	{
 		count++;
 		current=(token *)current->next;
@@ -68,7 +67,7 @@ int statement_list(*token current)
 	
 }
 
-int statement(*token current)
+int statement()
 {
 	//ID:=<expression>;
 	if(strcmp(current_token->type,"ID")==0)
@@ -76,7 +75,7 @@ int statement(*token current)
 		current=(token*)current->next;
 		if(strcmp(current_token->type,"ASSIGNOP")==0)
 		{
-			if(expression(current*)==1)
+			if(expression()==1)
 			{
 				current=(token*)current->next;
 				if(strcmp(current_token->type,"SEMICOLON")==0)
@@ -107,7 +106,7 @@ int statement(*token current)
 		current=(token *)current->next;
 		if (strcmp(current_token->type,"LPAREN")==0)
 		{
-			if(id_list(*current==1))
+			if(id_list()==1)
 			{
 				current=(token *)current->next;
 				if (strcmp(current_token->type,"RPAREN")==0)
@@ -144,7 +143,7 @@ int statement(*token current)
 		current=(token *)current->next;
 		if (strcmp(current_token->type,"LPAREN")==0)
 		{
-			if(expr_list(*current)==1)
+			if(expr_list()==1)
 			{
 				current=(token *)current->next;
 				if (strcmp(current_token->type,"RPAREN")==0)
@@ -177,4 +176,37 @@ int statement(*token current)
 	{
 		return 0;
 	}
+}
+
+int id_list()
+{
+	token * prev;
+	current=(token *)current->next;
+	if (strcmp(current_token->type,"ID")==0)
+	{
+		prev=current;
+		current=(token *)current->next;
+		while(strcmp(current_token->type,"COMMA")==1)
+		{
+			current=(token *)current->next;
+			if (strcmp(current_token->type,"ID")==0)
+			{
+				prev=current;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		current=prev;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int expr_list()
+{
+	
 }
