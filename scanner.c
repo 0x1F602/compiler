@@ -52,16 +52,16 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
             //format from token and print to temp file
             token t = s.t[i];
             //printf("Inside scanner: %d\n", t.token_number);
-            current = (token *)malloc(sizeof(token));
-            current->token_number = t.token_number;
-            // just figure out how to use memset and strlen here....
-            mycopy((char *)&(current->token_type), (char *)&(t.token_type));
-            mycopy((char *)&(current->buffer),  (char *)&(t.buffer));
-            current->next = (struct token *)*token_head;
-            *token_head = current;
             
             //negative token number means it was a comment, edge case.
             if (t.token_number != -1) {
+                current = (token *)malloc(sizeof(token));
+                current->token_number = t.token_number;
+                // just figure out how to use memset and strlen here....
+                mycopy((char *)&(current->token_type), (char *)&(t.token_type));
+                mycopy((char *)&(current->buffer),  (char *)&(t.buffer));
+                current->next = (struct token *)*token_head;
+                *token_head = current;
                 fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", t.token_number, t.token_type, t.buffer);
             }
             if (t.token_number == ERROR) {

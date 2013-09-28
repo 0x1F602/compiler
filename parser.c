@@ -1,7 +1,19 @@
 #include "headers/scanner.h"
 
-int parser(token * c)
+token * c;
+
+int advance() {
+    int sentinel = 0;
+    if (c->next != NULL) {
+        sentinel = 1;
+        c = (token *)c->next;
+    }
+    return sentinel;
+}
+
+int parser(token * cu)
 {
+    c = cu;
 	if(program(c))
 	{
 		return 1;	//program syntax valid
@@ -13,15 +25,14 @@ int parser(token * c)
 	
 }
 
-int program(token * c)
+int program()
 {
 	int valid;
 	
 	if(c->token_number == BEGIN)
 	{
-		c=(token *)c->next;
+        advance();
 		valid=statement_list(c);
-		
 		if (valid==1)
 		{
 			if(c->token_number == END)
@@ -31,27 +42,29 @@ int program(token * c)
 			}
 			else
 			{
+                printf("Missing END");
 				return 0;
 			}
 		}
 		else
 		{
+            printf("Invalid grammar detected");
 			return 0;
 		}
 	}
 	else
 	{
+        printf("Missing BEGIN");
 		return 0;
 	}
 }
 
-int statement_list(token * c)
+int statement_list()
 {
 	int count=0;
 	while(statement(c)==1)
 	{
 		count++;
-		c=(token *)c->next;
 	}
 	if(count>0)
 	{
@@ -59,56 +72,62 @@ int statement_list(token * c)
 	}
 	else
 	{
+        printf("Must have at least 1 statement");
 		return 0;
 	}
 	
 }
 
-int statement(token * c)
+int statement()
 {
 	//ID:=<expression>;
 	if(c->token_number == ID)
 	{
-		c=(token*)c->next;
+        advance();
 		if(c->token_number == ASSIGNOP)
 		{
-			if(expression(c)==1)
+            advance();
+			if(expression(c))
 			{
-				c=(token*)c->next;
+                //advance();
 				if(c->token_number == SEMICOLON)
 				{
+					advance();
 					//valid statement
 					return 1;
 				}
 				else
 				{
+                    printf("Missing semicolon");
 					return 0;
 				}
 			}
 			else
 			{
 				//keep increment pointer until after ;?
+				printf("Invalid expression");
 				return 0;
 			}
 		}
 		else
 		{
 			//keep increment pointer until after ;?
+			printf("Missing assignment operator");
 			return 0;
 		}
 	}
 	//READ(<id_list>);
 	else if (c->token_number == READ)
 	{
-		c=(token *)c->next;
+        advance();
 		if (c->token_number == LPAREN)
 		{
 			if(id_list(c)==1)
 			{
-				c=(token *)c->next;
+                advance();
 				if (c->token_number == RPAREN)
 				{
-					c=(token *)c->next;
+                    advance();
 					if (c->token_number == SEMICOLON)
 					{
 						//valid statement
@@ -116,36 +135,40 @@ int statement(token * c)
 					}
 					else
 					{
+                        printf("Missing semicolon");
 						return 0;
 					}
 				}
 				else
 				{
+                    printf("Missing right parentheses");
 					return 0;
 				}
 			}
 			else
 			{
+                printf("Expected identifier");
 				return 0;
 			}
 		}
 		else
 		{
+            printf("Expected left parentheses");
 			return 0;
 		}
 	}
 	//WRITE(<expr_list>);
 	else if (c->token_number == WRITE)
 	{
-		c=(token *)c->next;
+        advance();
 		if (c->token_number == LPAREN)
 		{
 			if(expr_list(c)==1)
 			{
-				c=(token *)c->next;
+                advance();
 				if (c->token_number == RPAREN)
 				{
-					c=(token *)c->next;
+                    advance();
 					if (c->token_number == SEMICOLON)
 						{
 							//valid statement
@@ -153,17 +176,20 @@ int statement(token * c)
 						}
 						else
 						{
+                            printf("Missing semicolon");
 							return 0;
 						}
 				}
 			}
 			else
 			{
+                printf("Invalid expression in list");
 				return 0;
 			}
 		}
 		else
 		{
+            printf("Expected left parentheses");
 			return 0;
 		}
 		
@@ -175,23 +201,24 @@ int statement(token * c)
 	}
 }
 
-int id_list(token * c)
+int id_list()
 {
 	token * prev;
-	c=(token *)c->next;
+    advance();
 	if (c->token_number == ID)
 	{
 		prev=c;
-		c=(token *)c->next;
+        advance();
 		while(c->token_number == COMMA)
 		{
-			c=(token *)c->next;
+            advance();
 			if (c->token_number == ID)
 			{
 				prev=c;
 			}
 			else
 			{
+                printf("Expected identifier");
 				return 0;
 			}
 		}
@@ -199,15 +226,47 @@ int id_list(token * c)
 	}
 	else
 	{
+        printf("Expected identifier");
 		return 0;
 	}
 }
 
-int expr_list(token * c)
+int expr_list()
 {
 	
 }
 
-int expression(token * c) {
+int expression() {
+    int sentinel = 0; // fail by default
+    if (primary(c)) {
+        advance();
+        if (c->token_number == PLUSOP || c->token_number == MINUSOP) {
+            advance();
+            if (primary(c)) {
+                advance();
+                sentinel = 1;
+            }
+        }
+        else {
+            sentinel = 1;
+        }
+    }
+    return sentinel;
+}
 
+int primary() {
+    int sentinel = 0;
+    if (c->token_number == INTLITERAL || c->token_number == ID) {
+        sentinel = 1;
+    }
+    else if (c->token_number == LPAREN) {
+        advance();
+        if (expression(c)) {
+            //advance();
+            if (c->token_number == RPAREN) {
+                sentinel = 1;
+            }
+        }
+    }
+    return sentinel;
 }

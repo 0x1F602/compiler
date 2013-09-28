@@ -1,3 +1,4 @@
 begin
-    d:=A -- comment
+    d:= A + 5; -- comment
+    read(d,b);
 end
