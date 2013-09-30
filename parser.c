@@ -50,6 +50,7 @@ int program()
 			}
 			else
 			{
+                printf("Received: %s", c->buffer);
                 printf("Missing END");
 				return 0;
 			}
@@ -139,6 +140,7 @@ int statement()
 					if (c->token_number == SEMICOLON)
 					{
 						//valid statement
+                        advance();
 						return 1;
 					}
 					else
@@ -155,7 +157,7 @@ int statement()
 			}
 			else
 			{
-                printf("Expected identifier");
+                printf("Expected at least one identifier");
 				return 0;
 			}
 		}
@@ -171,15 +173,16 @@ int statement()
         advance();
 		if (c->token_number == LPAREN)
 		{
+            advance();
 			if(expr_list(c)==1)
 			{
-                advance();
 				if (c->token_number == RPAREN)
 				{
                     advance();
 					if (c->token_number == SEMICOLON)
 						{
 							//valid statement
+							advance();
 							return 1;
 						}
 						else
@@ -225,15 +228,17 @@ int id_list()
 			}
 			else
 			{
-                printf("Expected identifier");
+                printf("Expected another identifier");
 				return 0;
 			}
+            advance();
 		}
-		previous();
+	    c=prev;
+	return 1;
 	}
 	else
 	{
-        printf("Expected identifier");
+        printf("Expected at least one identifier");
 		return 0;
 	}
 }
@@ -241,20 +246,20 @@ int id_list()
 int expr_list()
 {
     int sentinel = 1;
-    if (expression(c)
+    if (expression())
     {
-		advance();
+        token * pr;
 		while (c->token_number==COMMA)
 		{
 			advance();
-			if expression(c)
+			if (expression(c))
 			{
-				advance();
+				//advance();
 			}
 			else
 			{
 				sentinel=0;
-				printf("Expected expression");
+				printf("Expected expression after comma");
 				break;
 			}
 		}
@@ -263,7 +268,9 @@ int expr_list()
 	else
 	{
 		sentinel=0;
+	    printf("Expected expression or expression list");
 	}
+    return sentinel;
 }
 
 int expression() {
