@@ -1,14 +1,22 @@
 #include "headers/scanner.h"
 
 token * c;
+token * prev;
 
 int advance() {
     int sentinel = 0;
+	prev=c;		//sets the prev token to the current one before advancing
     if (c->next != NULL) {
         sentinel = 1;
         c = (token *)c->next;
     }
     return sentinel;
+}
+
+//this will allow us to go back to the prev token if we need to
+int previous()
+{
+	c=prev;
 }
 
 int parser(token * cu)
@@ -22,13 +30,13 @@ int parser(token * cu)
 	{
 		return 0;	//program syntax invalid
 	}
-	
+
 }
 
 int program()
 {
 	int valid;
-	
+
 	if(c->token_number == BEGIN)
 	{
         advance();
@@ -76,7 +84,7 @@ int statement_list()
         printf("Must have at least 1 statement");
 		return 0;
 	}
-	
+
 }
 
 int statement()
@@ -195,7 +203,7 @@ int statement()
             printf("Expected left parentheses");
 			return 0;
 		}
-		
+
 	}
 	//else not a statement
 	else
@@ -206,7 +214,6 @@ int statement()
 
 int id_list()
 {
-	token * prev;
     advance();
 	if (c->token_number == ID)
 	{
@@ -256,6 +263,7 @@ int expr_list()
 				break;
 			}
 		}
+		previous();
     }
 	else
 	{
@@ -268,14 +276,12 @@ int expr_list()
 int expression() {
     int sentinel = 0; // fail by default
     if (primary(c)) {
-        advance();
-        if (c->token_number == PLUSOP || c->token_number == MINUSOP) {
-            advance();
+        while (addop(c)) {
             if (primary(c)) {
-                advance();
                 sentinel = 1;
             }
         }
+		previous();
         else {
             sentinel = 1;
         }
@@ -285,17 +291,46 @@ int expression() {
 
 int primary() {
     int sentinel = 0;
-    if (c->token_number == INTLITERAL || c->token_number == ID) {
+	advance();
+    if (c->token_number == INTLITERAL) {
         sentinel = 1;
     }
     else if (c->token_number == LPAREN) {
         advance();
         if (expression(c)) {
-            //advance();
+            advance();
             if (c->token_number == RPAREN) {
                 sentinel = 1;
             }
         }
     }
+	else if (c->token_number== ID)
+	{
+		sentinel=1;
+	}
+	else
+	{
+		printf("Expecting primary");
+	}
     return sentinel;
 }
+
+int addop()
+{
+	int sentinel = 0;
+	advance();
+	if(c->token_number==PLUSOP)
+	{
+		sentinel=1;
+	}
+	else if (c->token_number==MINUSOP)
+	{
+		sentinel=1;
+	}
+	else
+	{
+//		printf("Expecting ADDOP);
+	}
+	return sentinel;
+}
+
