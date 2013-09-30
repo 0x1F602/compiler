@@ -22,7 +22,7 @@ int previous()
 int parser(token * cu)
 {
     c = cu;
-	if(program(c))
+	if(program())
 	{
 		return 1;	//program syntax valid
 	}
@@ -40,7 +40,7 @@ int program()
 	if(c->token_number == BEGIN)
 	{
         advance();
-		valid=statement_list(c);
+		valid=statement_list();
 		if (valid==1)
 		{
 			if(c->token_number == END)
@@ -71,7 +71,7 @@ int program()
 int statement_list()
 {
 	int count=0;
-	while(statement(c)==1)
+	while(statement()==1)
 	{
 		count++;
 	}
@@ -96,7 +96,7 @@ int statement()
 		if(c->token_number == ASSIGNOP)
 		{
             advance();
-			if(expression(c))
+			if(expression())
 			{
                 //advance();
 				if(c->token_number == SEMICOLON)
@@ -131,7 +131,7 @@ int statement()
         advance();
 		if (c->token_number == LPAREN)
 		{
-			if(id_list(c)==1)
+			if(id_list()==1)
 			{
                 advance();
 				if (c->token_number == RPAREN)
@@ -174,7 +174,7 @@ int statement()
 		if (c->token_number == LPAREN)
 		{
             advance();
-			if(expr_list(c)==1)
+			if(expr_list()==1)
 			{
 				if (c->token_number == RPAREN)
 				{
@@ -252,7 +252,7 @@ int expr_list()
 		while (c->token_number==COMMA)
 		{
 			advance();
-			if (expression(c))
+			if (expression())
 			{
 				//advance();
 			}
@@ -275,30 +275,28 @@ int expr_list()
 
 int expression() {
     int sentinel = 0; // fail by default
-    if (primary(c)) {
-        while (addop(c)) {
-            if (primary(c)) {
+    if (primary()) {
+        while (addop()) {
+            if (primary()) {
                 sentinel = 1;
             }
+            else {
+                sentinel = 0;
+            }
         }
-		previous();
-        else {
-            sentinel = 1;
-        }
+        sentinel = 1;
     }
     return sentinel;
 }
 
 int primary() {
     int sentinel = 0;
-	advance();
     if (c->token_number == INTLITERAL) {
         sentinel = 1;
     }
     else if (c->token_number == LPAREN) {
         advance();
-        if (expression(c)) {
-            advance();
+        if (expression()) {
             if (c->token_number == RPAREN) {
                 sentinel = 1;
             }
@@ -312,20 +310,22 @@ int primary() {
 	{
 		printf("Expecting primary");
 	}
+	advance();
     return sentinel;
 }
 
 int addop()
 {
 	int sentinel = 0;
-	advance();
 	if(c->token_number==PLUSOP)
 	{
 		sentinel=1;
+	    advance();
 	}
 	else if (c->token_number==MINUSOP)
 	{
 		sentinel=1;
+	    advance();
 	}
 	else
 	{
