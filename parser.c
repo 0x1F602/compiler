@@ -233,7 +233,29 @@ int id_list()
 
 int expr_list()
 {
-	
+    int sentinel = 1;
+    if (expression(c)
+    {
+		advance();
+		while (c->token_number==COMMA)
+		{
+			advance();
+			if expression(c)
+			{
+				advance();
+			}
+			else
+			{
+				sentinel=0;
+				printf("Expected expression");
+				break;
+			}
+		}
+    }
+	else
+	{
+		sentinel=0;
+	}
 }
 
 int expression() {
