@@ -63,12 +63,12 @@ void calculate(openfile_data of_d) {
     if(parser(current))
     {
     	//no errors
-    	printf("No semantic errors detected.");
+    	printf("No semantic errors detected.\n");
     }
     else
     {
     	//syntax error somewhere
-    	printf("Semantic errors detected.");
+    	printf("Semantic errors detected.\n");
     }
 }
 

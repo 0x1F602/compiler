@@ -43,33 +43,34 @@ int program()
 	{
 		fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
                 fprintf(of_d.temp1,"\nPROGRAM LINE: BEGIN\n\n\n");
+                fprintf(of_d.listing_file, "1:\t%s\n", c->buffer);
         	advance();
 		valid=statement_list();
-		if (valid==1)
+		if (valid > 0)
 		{
 			if(c->token_number == END)
 			{
 				//valid program grammar
 				fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
                 		fprintf(of_d.temp1,"\nPROGRAM LINE: END\n\n\n");
+                fprintf(of_d.listing_file, "%d:\t%s\n", valid, c->buffer);
 				return 1;
 			}
 			else
 			{
-                		printf("Received: %s", c->buffer);
-                		printf("Missing END");
+                		printf("Missing END\n");
 				return 0;
 			}
 		}
 		else
 		{
-            		printf("Invalid grammar detected");
+            		printf("Invalid grammar detected\n");
 			return 0;
 		}
 	}
 	else
 	{
-        	printf("Missing BEGIN");
+        	printf("Missing BEGIN\n");
 		return 0;
 	}
 }
@@ -77,23 +78,19 @@ int program()
 int statement_list()
 {
 	int count=0;
-	while(statement()==1)
+	while(statement(count + 2)==1) // + 1, for count = 0. + 2, to account for begin
 	{
 		count++;
 	}
-	if(count>0)
+	if(count<=0)
 	{
-		return 1;
+        	printf("Must have at least 1 statement\n");
 	}
-	else
-	{
-        	printf("Must have at least 1 statement");
-		return 0;
-	}
+	return count;
 
 }
 
-int statement()
+int statement(int count)
 {
 char buffer[200];
 token * begin;
@@ -120,26 +117,27 @@ memset(buffer, 0, sizeof buffer);
                                             begin=(token *) begin->next;
                                         }
                                         fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
+                                        fprintf(of_d.listing_file, "%d:\t%s\n", count, buffer);
                                         //valid statement
                                         return 1;
 				}
 				else
 				{
-                        printf("Missing semicolon");
+                        printf("Missing semicolon\n");
 					return 0;
 				}
 			}
 			else
 			{
 				//keep increment pointer until after ;?
-				printf("Invalid expression");
+				printf("Invalid expression\n");
 				return 0;
 			}
 		}
 		else
 		{
 			//keep increment pointer until after ;?
-			printf("Missing assignment operator");
+			printf("Missing assignment operator\n");
 			return 0;
 		}
 	}
@@ -170,25 +168,25 @@ memset(buffer, 0, sizeof buffer);
 					}
 					else
 					{
-                        		    printf("Missing semicolon");
+                        		    printf("Missing semicolon\n");
 				            return 0;
 					}
 				}
 				else
 				{
-                    			printf("Missing right parentheses");
+                    			printf("Missing right parentheses\n");
 					return 0;
 				}
 			}
 			else
 			{
-               			 printf("Expected at least one identifier");
+               			 printf("Expected at least one identifier\n");
 				return 0;
 			}
 		}
 		else
 		{
-            		printf("Expected left parentheses");
+            		printf("Expected left parentheses\n");
 			return 0;
 		}
 	}
@@ -219,20 +217,20 @@ memset(buffer, 0, sizeof buffer);
 					}
 					else
 					{
-                            		    printf("Missing semicolon");
+                            		    printf("Missing semicolon\n");
 					    return 0;
 					}
 				}
 			}
 			else
 			{
-                		printf("Invalid expression in list");
+                		printf("Invalid expression in list\n");
 				return 0;
 			}
 		}
 		else
 		{
-           		 printf("Expected left parentheses");
+           		 printf("Expected left parentheses\n");
 			return 0;
 		}
 
@@ -261,7 +259,7 @@ int id_list()
 			}
 			else
 			{
-                		printf("Expected another identifier");
+                		printf("Expected another identifier\n");
 				return 0;
 			}
             	advance();
@@ -271,7 +269,7 @@ int id_list()
 	}
 	else
 	{
-        	printf("Expected at least one identifier");
+        	printf("Expected at least one identifier\n");
 		return 0;
 	}
 }
@@ -292,7 +290,7 @@ int expr_list()
 			else
 			{
 				sentinel=0;
-				printf("Expected expression after comma");
+				printf("Expected expression after comma\n");
 				break;
 			}
 			//advance();
@@ -302,7 +300,7 @@ int expr_list()
 	else
 	{
 		sentinel=0;
-	    printf("Expected expression or expression list");
+	    printf("Expected expression or expression list\n");
 	}
     return sentinel;
 }
@@ -323,7 +321,7 @@ int expression() {
     }
     else
     {
-	printf("Expecting primary");
+	printf("Expecting primary\n");
     }
     return sentinel;
 }
@@ -347,7 +345,7 @@ int primary() {
 	}
 	else
 	{
-		printf("Expecting primary");
+		printf("Expecting primary\n");
 	}
     advance();
     return sentinel;
