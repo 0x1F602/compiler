@@ -17,6 +17,9 @@
  */
 
 // idea mostly from http://www.mytechinterviews.com/reverse-a-linked-list
+
+
+
 token * reverse(token * head) {
     token * t1;
     token * previous = NULL;
@@ -28,6 +31,7 @@ token * reverse(token * head) {
     }
     return previous;
 }
+
 
 openfile_data setup(int argc, char * argv[]) {
     openfile_data ofd;
@@ -76,6 +80,7 @@ void teardown(openfile_data of_d) {
 }
 
 int main(int argc, char * argv[]) {
+    lex_error=0;
     openfile_data of_d = setup(argc, argv);
     calculate(of_d);
     teardown(of_d);

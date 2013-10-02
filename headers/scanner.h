@@ -9,6 +9,8 @@
 
 #define MAX_SIZE 128
 
+int lex_error;
+
 typedef struct {
     short int token_number;
     char token_type [16];
