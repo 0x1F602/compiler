@@ -13,12 +13,15 @@ typedef struct {
     unsigned short int index;
 } tokened_string;
 
+
 typedef struct {
     FILE * input;
     FILE * output;
     FILE * listing_file;
     FILE * temp1;
 } openfile_data;
+
+openfile_data of_d;
 
 char * prompt_user(const char *);
 openfile_data handle_no_params(void);
