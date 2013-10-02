@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
+openfile_data of_d;
+
 // I feel so smart, I wrote this all by myself
 void mycopy(char * destination, char * source) {
     int i = 0;
@@ -25,7 +27,7 @@ void toUpper(char *text, char *nText){
 
 // returns pointer to head token in linked list
 void scanner(openfile_data * of_d_ptr, token ** token_head) {
-    openfile_data of_d = *of_d_ptr;
+    of_d = *of_d_ptr;
     token * current;
     FILE * in = of_d.input;
     FILE * listing_file = of_d.listing_file;
@@ -52,7 +54,6 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
             //format from token and print to temp file
             token t = s.t[i];
             //printf("Inside scanner: %d\n", t.token_number);
-            
             //negative token number means it was a comment, edge case.
             if (t.token_number != -1) {
                 current = (token *)malloc(sizeof(token));
@@ -62,7 +63,7 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
                 mycopy((char *)&(current->buffer),  (char *)&(t.buffer));
                 current->next = (struct token *)*token_head;
                 *token_head = current;
-                fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", t.token_number, t.token_type, t.buffer);
+                //fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", t.token_number, t.token_type, t.buffer);
             }
             if (t.token_number == ERROR) {
                 // put this in the listing file via of_d_ptr
@@ -82,8 +83,8 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
     *token_head = current;
     //printf("Inside scanner: %d\n", (*token_head)->token_number);
 
-    fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", SCANEOF, "SCANEOF", "EOF");
-    fprintf(of_d.listing_file, "\n\nLexical errors.\t%d", total_errors);
+    //fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", SCANEOF, "SCANEOF", "EOF");
+    fprintf(of_d.listing_file, "\n\nLexical errors.\t%d", lex_error);
     return;
 }
 
@@ -315,5 +316,6 @@ token match_error(scanner_data * sp) {
     strcpy(t.token_type, "ERROR");
     strncpy(t.buffer, sp->line_buffer + sp->line_index, 1);
     sp->line_index++;
+    lex_error++;
     return t;
 }

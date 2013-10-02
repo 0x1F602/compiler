@@ -1,4 +1,6 @@
 #include "headers/scanner.h"
+#include <string.h>
+#include <stdio.h>
 
 token * c;
 token * prev;
@@ -39,31 +41,35 @@ int program()
 
 	if(c->token_number == BEGIN)
 	{
-        advance();
+		fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
+                fprintf(of_d.temp1,"\nPROGRAM LINE: BEGIN\n\n\n");
+        	advance();
 		valid=statement_list();
 		if (valid==1)
 		{
 			if(c->token_number == END)
 			{
 				//valid program grammar
+				fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
+                		fprintf(of_d.temp1,"\nPROGRAM LINE: END\n\n\n");
 				return 1;
 			}
 			else
 			{
-                printf("Received: %s", c->buffer);
-                printf("Missing END");
+                		printf("Received: %s", c->buffer);
+                		printf("Missing END");
 				return 0;
 			}
 		}
 		else
 		{
-            printf("Invalid grammar detected");
+            		printf("Invalid grammar detected");
 			return 0;
 		}
 	}
 	else
 	{
-        printf("Missing BEGIN");
+        	printf("Missing BEGIN");
 		return 0;
 	}
 }
@@ -81,7 +87,7 @@ int statement_list()
 	}
 	else
 	{
-        printf("Must have at least 1 statement");
+        	printf("Must have at least 1 statement");
 		return 0;
 	}
 
@@ -89,25 +95,37 @@ int statement_list()
 
 int statement()
 {
+char buffer[200];
+token * begin;
+begin=c;
+memset(buffer, 0, sizeof buffer);
+
 	//ID:=<expression>;
 	if(c->token_number == ID)
 	{
-        advance();
+        	advance();
 		if(c->token_number == ASSIGNOP)
 		{
-            advance();
+            		advance();
 			if(expression())
 			{
-                //advance();
+                		//advance();
 				if(c->token_number == SEMICOLON)
 				{
 					advance();
-					//valid statement
-					return 1;
+                                        while(c!=begin)
+                                        {
+                                            fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
+                                            sprintf(buffer+strlen(buffer),"%s",begin->buffer);
+                                            begin=(token *) begin->next;
+                                        }
+                                        fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
+                                        //valid statement
+                                        return 1;
 				}
 				else
 				{
-                    printf("Missing semicolon");
+                        printf("Missing semicolon");
 					return 0;
 				}
 			}
@@ -128,79 +146,93 @@ int statement()
 	//READ(<id_list>);
 	else if (c->token_number == READ)
 	{
-        advance();
+        	advance();
 		if (c->token_number == LPAREN)
 		{
 			if(id_list()==1)
 			{
-                advance();
+                		advance();
 				if (c->token_number == RPAREN)
 				{
-                    advance();
+                    			advance();
 					if (c->token_number == SEMICOLON)
 					{
-						//valid statement
-                        advance();
-						return 1;
+					    advance();
+                                            while(c!=begin)
+                                            {
+                                                fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
+                                                sprintf(buffer+strlen(buffer),"%s",begin->buffer);
+                                                begin=(token *) begin->next;
+                                            }
+                                            fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
+                                            //valid statement
+                                            return 1;
 					}
 					else
 					{
-                        printf("Missing semicolon");
-						return 0;
+                        		    printf("Missing semicolon");
+				            return 0;
 					}
 				}
 				else
 				{
-                    printf("Missing right parentheses");
+                    			printf("Missing right parentheses");
 					return 0;
 				}
 			}
 			else
 			{
-                printf("Expected at least one identifier");
+               			 printf("Expected at least one identifier");
 				return 0;
 			}
 		}
 		else
 		{
-            printf("Expected left parentheses");
+            		printf("Expected left parentheses");
 			return 0;
 		}
 	}
 	//WRITE(<expr_list>);
 	else if (c->token_number == WRITE)
 	{
-        advance();
+		advance();
 		if (c->token_number == LPAREN)
 		{
-            advance();
+            		advance();
 			if(expr_list()==1)
 			{
 				if (c->token_number == RPAREN)
 				{
-                    advance();
+                    	   		advance();
 					if (c->token_number == SEMICOLON)
-						{
-							//valid statement
-							advance();
-							return 1;
-						}
-						else
-						{
-                            printf("Missing semicolon");
-							return 0;
-						}
+					 {
+				             advance();
+                                             while(c!=begin)
+                                       	     {
+                                                 fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
+                                                 sprintf(buffer+strlen(buffer),"%s",begin->buffer);
+                                                 begin=(token *) begin->next;
+                                             }
+                                        fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
+                                        //valid statement
+                                        return 1;
+					}
+					else
+					{
+                            		    printf("Missing semicolon");
+					    return 0;
+					}
 				}
 			}
 			else
 			{
-                printf("Invalid expression in list");
+                		printf("Invalid expression in list");
 				return 0;
 			}
 		}
 		else
 		{
-            printf("Expected left parentheses");
+           		 printf("Expected left parentheses");
 			return 0;
 		}
 
@@ -208,6 +240,7 @@ int statement()
 	//else not a statement
 	else
 	{
+		//printf("Not a statement\n");
 		return 0;
 	}
 }
@@ -218,27 +251,27 @@ int id_list()
 	if (c->token_number == ID)
 	{
 		prev=c;
-        advance();
+        	advance();
 		while(c->token_number == COMMA)
 		{
-            advance();
+            		advance();
 			if (c->token_number == ID)
 			{
 				prev=c;
 			}
 			else
 			{
-                printf("Expected another identifier");
+                		printf("Expected another identifier");
 				return 0;
 			}
-            advance();
+            	advance();
 		}
 	    c=prev;
-		return 1;
+	    return 1;
 	}
 	else
 	{
-        printf("Expected at least one identifier");
+        	printf("Expected at least one identifier");
 		return 0;
 	}
 }
@@ -248,8 +281,8 @@ int expr_list()
     int sentinel = 1;
     if (expression())
     {
-        token * pr;
-		while (c->token_number==COMMA)
+        //token * pr;
+	    	while (c->token_number==COMMA)
 		{
 			advance();
 			if (expression())
@@ -262,8 +295,9 @@ int expr_list()
 				printf("Expected expression after comma");
 				break;
 			}
+			//advance();
 		}
-		previous();
+		//previous();
     }
 	else
 	{
@@ -276,15 +310,20 @@ int expr_list()
 int expression() {
     int sentinel = 0; // fail by default
     if (primary()) {
+	sentinel = 1;
         while (addop()) {
             if (primary()) {
                 sentinel = 1;
             }
             else {
+		printf("Expected Primary\n");
                 sentinel = 0;
             }
         }
-        sentinel = 1;
+    }
+    else
+    {
+	printf("Expecting primary");
     }
     return sentinel;
 }
@@ -310,7 +349,7 @@ int primary() {
 	{
 		printf("Expecting primary");
 	}
-	advance();
+    advance();
     return sentinel;
 }
 
@@ -319,17 +358,17 @@ int addop()
 	int sentinel = 0;
 	if(c->token_number==PLUSOP)
 	{
-		sentinel=1;
+	    sentinel=1;
 	    advance();
 	}
 	else if (c->token_number==MINUSOP)
 	{
-		sentinel=1;
+	    sentinel=1;
 	    advance();
 	}
 	else
 	{
-//		printf("Expecting ADDOP);
+//		printf("Expecting ADDOP");
 	}
 	return sentinel;
 }
