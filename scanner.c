@@ -67,7 +67,7 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
             }
             if (t.token_number == ERROR) {
                 // put this in the listing file via of_d_ptr
-                //fprintf(of_d.listing_file,"ERROR: %s\n", t.buffer);
+                fprintf(of_d.listing_file,"ERROR: %s\n", t.buffer);
                 total_errors++;
             }
         }
@@ -84,7 +84,7 @@ void scanner(openfile_data * of_d_ptr, token ** token_head) {
     //printf("Inside scanner: %d\n", (*token_head)->token_number);
 
     //fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", SCANEOF, "SCANEOF", "EOF");
-    //fprintf(of_d.listing_file, "\n\nLexical errors.\t%d", total_errors);
+    fprintf(of_d.listing_file, "\n\nLexical errors.\t%d", lex_error);
     return;
 }
 
