@@ -2,6 +2,7 @@
 #include "headers/openfile.h"
 #include "headers/scanner.h"
 #include "headers/parser.h"
+#include "headers/codegen.h"
 
 /* G4P1
  * Patrik Natali
@@ -64,6 +65,8 @@ void calculate(openfile_data of_d) {
     {
     	//no errors
     	printf("No semantic errors detected.\n");
+	token * current = (token *)token_head;
+	codegen(current);
     }
     else
     {
@@ -76,6 +79,7 @@ void teardown(openfile_data of_d) {
     fclose(of_d.input);
     fclose(of_d.output);
     fclose(of_d.temp1);
+    fclose(of_d.temp2);
     fclose(of_d.listing_file);
 }
 

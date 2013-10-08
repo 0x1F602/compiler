@@ -137,6 +137,7 @@ openfile_data handle_two_params(char * source, char * target) {
         target_file = fopen(target, "w");
         FILE * tempfile1 = fopen("tmp1", "w");
         FILE * tempfile2 = fopen("listing_file", "w");
+	FILE * tempfile3 = fopen("tmp2","w");
 
         // implementing agreed upon pseudocode
     
@@ -144,6 +145,7 @@ openfile_data handle_two_params(char * source, char * target) {
         of_d.output = target_file;
         of_d.temp1 = tempfile1;
         of_d.listing_file = tempfile2;
+	of_d.temp2 = tempfile3;
     }
     else {
         printf("ERROR: Target can't be Source!\n");
