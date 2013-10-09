@@ -8,6 +8,8 @@ int var_next;
 void codegen(token * current)
 {
 	int var_next=0;
+	char read_buffer[128];
+	memset(read_buffer, 0, sizeof read_buffer);
 	current=(token *)next(current);		//first token is begin
 	code_begin();
 	while(current->token_number!=END)
@@ -26,11 +28,23 @@ void codegen(token * current)
 		{
 			current=(token *)next(current);	//read
 			current=(token *)next(current);	//(
-			while(current->token_number!=SEMICOLON)
+			fprintf(of_d.temp2,"scanf(\"");
+			while(current->token_number!=RPAREN)
             {
+				search_id(current);
+				strcat(read_buffer,current->buffer);
+				fprintf(of_d.temp2,"%%s");
                 current=(token *)next(current);
+				if(current->token_number==COMMA)
+				{
+					strcat(read_buffer,",");
+					fprintf(of_d.temp2," ");
+					current=(token *)next(current);
+				}
             }
-			fprintf(of_d.temp2,";\n");
+			current=(token *)next(current);//
+			fprintf(of_d.temp2,"\",%s);\n",read_buffer);
+			memset(read_buffer, 0, sizeof read_buffer);
 		}
 		else if(current->token_number==WRITE)
 		{
@@ -75,7 +89,7 @@ int search_id(token * current)
 	strcpy((char*)list[var_next].name,current->buffer);
 	list[var_next].value=0;
 	fprintf(of_d.temp1,"int %s;\n",current->buffer);
-	fprintf(of_d.temp2,"%s=0\n",current->buffer);
+	//fprintf(of_d.temp2,"%s=0\n",current->buffer);
 	var_next++;
 	return (var_next-1);	
 }
