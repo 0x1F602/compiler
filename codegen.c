@@ -17,11 +17,44 @@ void codegen(token * current)
 		if(current->token_number==ID)
 		{
 			search_id(current);
+			fprintf(of_d.temp2,"%s = ",current->buffer);
 			current=(token *)next(current);
+			current=(token *)next(current);//:=
 			while(current->token_number!=SEMICOLON)
 			{
-				current=(token *)next(current);
+				if(current->token_number==ID)
+				{
+					search_id(current);
+					fprintf(of_d.temp2,"%s",current->buffer);
+					current=(token *)next(current);
+				}
+				else if(current->token_number==INTLITERAL)
+				{
+					fprintf(of_d.temp2,"%s",current->buffer);
+					current=(token *)next(current);
+				}
+				else if(current->token_number==PLUSOP)
+				{
+					fprintf(of_d.temp2,"+");
+					current=(token *)next(current);
+				}
+				else if(current->token_number==MINUSOP)
+				{
+					fprintf(of_d.temp2,"-");
+					current=(token *)next(current);
+				}
+				else if(current->token_number==RPAREN)
+				{
+						fprintf(of_d.temp2,")");
+						current=(token *)next(current);
+				}
+				else if(current->token_number==LPAREN)
+				{
+					fprintf(of_d.temp2,"(");
+					current=(token *)next(current);
+				}
 			}
+			memset(read_buffer, 0, sizeof read_buffer);
 			fprintf(of_d.temp2,";\n");
 		}
 		else if(current->token_number==READ)
