@@ -41,8 +41,8 @@ int program()
 
 	if(c->token_number == BEGIN)
 	{
-		fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
-                fprintf(of_d.temp1,"\nPROGRAM LINE: BEGIN\n\n\n");
+		//fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
+                //fprintf(of_d.temp1,"\nPROGRAM LINE: BEGIN\n\n\n");
                 fprintf(of_d.listing_file, "1:\t%s\n", c->buffer);
         	advance();
 		valid=statement_list();
@@ -51,8 +51,8 @@ int program()
 			if(c->token_number == END)
 			{
 				//valid program grammar
-				fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
-                		fprintf(of_d.temp1,"\nPROGRAM LINE: END\n\n\n");
+				//fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", c->token_number, c->token_type, c->buffer);
+                		//fprintf(of_d.temp1,"\nPROGRAM LINE: END\n\n\n");
                 fprintf(of_d.listing_file, "%d:\t%s\n", valid, c->buffer);
 				return 1;
 			}
@@ -112,11 +112,11 @@ memset(buffer, 0, sizeof buffer);
 					advance();
                                         while(c!=begin)
                                         {
-                                            fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
+                                            //fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
                                             sprintf(buffer+strlen(buffer),"%s",begin->buffer);
                                             begin=(token *) begin->next;
                                         }
-                                        fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
+                                        //fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
                                         fprintf(of_d.listing_file, "%d:\t%s\n", count, buffer);
                                         //valid statement
                                         return 1;
@@ -158,11 +158,11 @@ memset(buffer, 0, sizeof buffer);
 					    advance();
                                             while(c!=begin)
                                             {
-                                                fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
+                                                //fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
                                                 sprintf(buffer+strlen(buffer),"%s",begin->buffer);
                                                 begin=(token *) begin->next;
                                             }
-                                            fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
+                                            //fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
                                             //valid statement
                                             return 1;
 					}
@@ -207,11 +207,11 @@ memset(buffer, 0, sizeof buffer);
 				             advance();
                                              while(c!=begin)
                                        	     {
-                                                 fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
+                                                 //fprintf(of_d.temp1, "Token number %d\tToken type %s\t\tActual %s\n", begin->token_number, begin->token_type, begin->buffer);
                                                  sprintf(buffer+strlen(buffer),"%s",begin->buffer);
                                                  begin=(token *) begin->next;
                                              }
-                                        fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
+                                        //fprintf(of_d.temp1,"\nPROGRAM LINE: %s\n\n\n",buffer);
                                         //valid statement
                                         return 1;
 					}
