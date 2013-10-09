@@ -117,6 +117,7 @@ openfile_data handle_two_params(char * source, char * target) {
     printf("Source: %s, Target: %s\n", source, target);
     openfile_data of_d;
     FILE * target_file; FILE * source_file;
+	char outc_name[32];
     // open target
     if (target_file = fopen(target,"r")) {
         char * new_target = (char *) malloc(32);
@@ -134,18 +135,19 @@ openfile_data handle_two_params(char * source, char * target) {
             printf("Source file doesn't exist.\n");
             return of_d; // sorry about the hacky solution but everyone realized it was due 9/4 on 9/4
         }
+		sprintf(outc_name,"%s.c",source);
         target_file = fopen(target, "w");
         FILE * tempfile1 = fopen("tmp1", "w");
         FILE * tempfile2 = fopen("listing_file", "w");
-	FILE * tempfile3 = fopen("tmp2","w");
-
+		FILE * tempfile3 = fopen("tmp2","wr");
+		FILE * outc = fopen(outc_name,"w");
         // implementing agreed upon pseudocode
-    
         of_d.input = source_file;
         of_d.output = target_file;
         of_d.temp1 = tempfile1;
         of_d.listing_file = tempfile2;
-	of_d.temp2 = tempfile3;
+		of_d.temp2 = tempfile3;
+		of_d.outc = outc;
     }
     else {
         printf("ERROR: Target can't be Source!\n");
