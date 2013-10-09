@@ -9,7 +9,9 @@ void codegen(token * current)
 {
 	int var_next=0;
 	char read_buffer[128];
+	char math_buffer[128];
 	memset(read_buffer, 0, sizeof read_buffer);
+	memset(math_buffer, 0, sizeof math_buffer);
 	current=(token *)next(current);		//first token is begin
 	code_begin();
 	while(current->token_number!=END)
@@ -81,13 +83,73 @@ void codegen(token * current)
 		}
 		else if(current->token_number==WRITE)
 		{
-			current=(token *)next(current);	//write
-			current=(token *)next(current);	//(
-			while(current->token_number!=SEMICOLON)
+			int paren_count=0;
+			search_id(current);
+            fprintf(of_d.temp2,"printf(\"%%d");
+            current=(token *)next(current);
+            current=(token *)next(current);//(
+            while(current->token_number!=SEMICOLON)
             {
-                current=(token *)next(current);
+                if(current->token_number==ID)
+                {
+                    search_id(current);
+                    strcat(math_buffer,current->buffer);
+                    current=(token *)next(current);
+                }
+                else if(current->token_number==INTLITERAL)
+                {
+                    strcat(math_buffer,current->buffer);
+                    current=(token *)next(current);
+                }
+                else if(current->token_number==PLUSOP)
+                {
+                    strcat(math_buffer,"+");
+                    current=(token *)next(current);
+                }
+                else if(current->token_number==MINUSOP)
+                {
+                    strcat(math_buffer,"-");
+                    current=(token *)next(current);
+                }
+                else if(current->token_number==RPAREN)
+                {
+					if(paren_count>0)
+					{
+						paren_count--;
+                        strcat(math_buffer,")");
+                        current=(token *)next(current);
+					}
+					else
+					{	
+						strcat(read_buffer,math_buffer);
+						fprintf(of_d.temp2,"\",%s);",read_buffer);
+						current=(token *)next(current);
+						memset(read_buffer, 0, sizeof read_buffer);
+						break;
+					}
+                }
+                else if(current->token_number==LPAREN)
+                {
+					paren_count++;
+                    strcat(math_buffer,"(");
+                    current=(token *)next(current);
+                }
+				else if(current->token_number==COMMA)
+				{
+					strcat(read_buffer,math_buffer);
+					strcat(read_buffer,",");
+					memset(math_buffer, 0, sizeof math_buffer);
+					fprintf(of_d.temp2," %%d");
+					current=(token *)next(current);
+
+				}
+				else
+				{
+					//error
+				}
             }
-			fprintf(of_d.temp2,";\n");
+            memset(read_buffer, 0, sizeof read_buffer);
+			memset(math_buffer, 0, sizeof math_buffer);
 		}
 		else
 		{
@@ -95,7 +157,7 @@ void codegen(token * current)
 		}
 		current=(token *)next(current);
 	}	//end-while
-	fprintf(of_d.temp2,"}");
+	fprintf(of_d.temp2,"\n}");
 }
 
 
