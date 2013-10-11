@@ -19,6 +19,8 @@ typedef struct {
     FILE * output;
     FILE * listing_file;
     FILE * temp1;
+    FILE * temp2;
+	FILE * outc;
 } openfile_data;
 
 openfile_data of_d;
