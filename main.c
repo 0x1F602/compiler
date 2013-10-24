@@ -36,11 +36,8 @@ token * reverse(token * head) {
 
 openfile_data setup(int argc, char * argv[]) {
     openfile_data ofd;
-	printf("\nUsage: %s [input_file [output_file]]\n", argv[0]);
+	printf("\nUsage: %s [input_file]\n", argv[0]);
     switch (argc) {
-        case 3:
-            ofd = handle_two_params(argv[1], argv[2]);
-        break;
         case 2:
             ofd = handle_one_params(argv[1]);
         break;

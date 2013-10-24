@@ -6,7 +6,7 @@
 #include <string.h>
 
 #define INPUT_EXTENSION ".IN"
-#define OUTPUT_EXTENSION ".OUT"
+#define OUTPUT_EXTENSION ".c"
 
 typedef struct {
     char ** tokens;
@@ -32,7 +32,7 @@ openfile_data handle_two_params(char*,char*);
 
 char * check_or_add_extension(char *, char *);
 char * find_extension(char *);
-char * generate_filename(char *);
+void generate_filename(char *, char *, char *);
 int file_exists(char *);
 void backup(FILE *);
 void close_if_open(FILE *);

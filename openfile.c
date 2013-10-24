@@ -82,7 +82,7 @@ char * check_or_add_extension(char * filename, char * default_extension) {
     return new_filename;
 }
 
-char * generate_filename(char * source) {
+void generate_filename(char * source, char * target, char * output_ext) {
     tokened_string ts = tokenize(source);
     char * source_filename_body = ts.tokens[0];
     if (ts.index > 1) {
@@ -93,27 +93,30 @@ char * generate_filename(char * source) {
         }
     }
     else {
-        strcat(source_filename_body, OUTPUT_EXTENSION);
+        strcat(target, source_filename_body);
+        strcat(target, output_ext);
     }
     free(ts.tokens);
-    return source_filename_body;
 }
 
 openfile_data handle_one_params(char * source) {
     source = check_or_add_extension(source, INPUT_EXTENSION);
-    char * target = prompt_user(tar_prompt);
+    char * target = (char *) malloc(max_size);
+    //char * target = prompt_user(tar_prompt);
     if (strlen(target) <= 0) {
-        target = generate_filename(source);
+        generate_filename(source, target, OUTPUT_EXTENSION);
     }
-    target = check_or_add_extension(target, OUTPUT_EXTENSION);
+    //target = check_or_add_extension(target, OUTPUT_EXTENSION);
     openfile_data ofd = handle_two_params(source, target);
-    free(target);
     return ofd;
 }
 
 openfile_data handle_two_params(char * source, char * target) {
     source = check_or_add_extension(source, INPUT_EXTENSION);
-    target = check_or_add_extension(target, OUTPUT_EXTENSION);
+    //target = check_or_add_extension(target, OUTPUT_EXTENSION);
+    // here we need to detect the filename separate from the extension
+    // and we need to take the filename and add in a c for the extension
+    //target = 
     printf("Source: %s, Target: %s\n", source, target);
     openfile_data of_d;
     FILE * target_file; FILE * source_file;
@@ -135,12 +138,13 @@ openfile_data handle_two_params(char * source, char * target) {
             printf("Source file doesn't exist.\n");
             return of_d; // sorry about the hacky solution but everyone realized it was due 9/4 on 9/4
         }
-		sprintf(outc_name,"%s.c",source);
         target_file = fopen(target, "w");
+        char * listing_filename = (char *) malloc(32);
+        generate_filename(source, listing_filename, ".LIS");
         FILE * tempfile1 = fopen("tmp1", "w");
-        FILE * tempfile2 = fopen("listing_file", "w");
+        FILE * tempfile2 = fopen(listing_filename, "w");
 		FILE * tempfile3 = fopen("tmp2","wr");
-		FILE * outc = fopen(outc_name,"w");
+		FILE * outc = fopen(target,"w");
         // implementing agreed upon pseudocode
         of_d.input = source_file;
         of_d.output = target_file;
