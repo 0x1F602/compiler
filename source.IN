@@ -3,5 +3,6 @@ begin
     d := A + 5 + C + (3 - 2); -- comment
     dasdf := (A);
     dasdf := (A + 5 - 2);
+    write(d);
     read(d,b);
 end

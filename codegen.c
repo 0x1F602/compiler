@@ -84,7 +84,6 @@ void codegen(token * current)
 		else if(current->token_number==WRITE)
 		{
 			int paren_count=0;
-			search_id(current);
             fprintf(of_d.temp2,"printf(\"%%d");
             current=(token *)next(current);
             current=(token *)next(current);//(
