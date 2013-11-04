@@ -5,7 +5,8 @@
 #include <stdbool.h>
 #include "openfile.h"
 
-typedef enum{START,
+typedef enum{
+    START,
 	FINISH,
 	SCANEOF,
 	INTLIT,
@@ -45,7 +46,7 @@ typedef enum{START,
 typedef struct{
 	int number;
 	char type[20];
-	char actual[30];
+	char actual[32];
 }token;
 
 char linebuff[250];
@@ -56,6 +57,6 @@ token process_alpha(char,fileStruct *);
 token process_num(char,fileStruct *);
 token process_symbol(char,fileStruct *);
 
-
+char fpeek(FILE * f);
 
 #endif

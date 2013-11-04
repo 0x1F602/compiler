@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include "headers/openfile.h"
 #include "headers/scanner.h"
 
@@ -10,9 +11,9 @@ main(int argc, char * argv[])
 	linenum=1;
 	memset(linebuff,0,sizeof(linebuff));
 	file_struct = openfile(argc, argv[1]);
-	getToken(&file_struct);
-	getToken(&file_struct);
-	getToken(&file_struct);
+    while (!feof(file_struct.input)) {
+	    getToken(&file_struct);
+    }
 }
 
 /*
