@@ -1,6 +1,9 @@
-12.34
-1234
-abcd
-efg hijka242a
-snca cajas
-a
+REAL x = 12.34;
+WHILE ENDIF
+IF ELSE
+ENDWHILE
+1234;
+abcd;
+efg hijka242a;
+snca cajas;
+a;

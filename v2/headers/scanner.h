@@ -9,6 +9,9 @@ typedef enum{
     START,
 	FINISH,
 	SCANEOF,
+    INTEGER,
+    REAL,
+    STRING,
 	INTLIT,
 	REALLIT,
 	STRINGLIT,
@@ -19,11 +22,11 @@ typedef enum{
 	RPAREN,
 	ID,
 	ASSIGN,
-	IFSTMT,
+	IF,
 	THEN,
-	WHILESTMT,
+	WHILE,
 	ENDWHILE,
-	ELSESTMT,
+	ELSE,
 	ENDIF,
 	COMMA,
 	QUOTE,
@@ -32,16 +35,18 @@ typedef enum{
 	MULTOP,
 	DIVOP,
 	EXPOP,
-	NOTOP,
-	ANDOP,
-	OROP,
+	NOT,
+	AND,
+	OR,
 	LTSIGN,
 	LTESIGN,
 	GTSIGN,
 	GTESIGN,
 	EQUIVSIGN,
-	NOTEQSIGN
+	NOTEQSIGN,
+    ERROR
 } token_number;
+
 
 typedef struct{
 	int number;
