@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 #include "headers/scanner.h"
 #include "headers/openfile.h"
 
@@ -35,42 +36,42 @@ token getToken(fileStruct *files)
 
 	c=fgetc(files->input);
 	
-    if (c == EOF) {
-        outToken.actual[0] = c; 
-        strcpy(outToken.type, "EOF");
+    while(c==' '||c=='\t'||c=='\n')
+    {
+        array[0]=c;
+        array[1]='\0';
+        strcat(linebuff,array);
+        if(c=='\n')
+        {
+            fprintf(files->lis_file,"%d %s",linenum,linebuff);
+            linenum++;
+            memset(linebuff,0,sizeof(linebuff));
+        }
+        c=fgetc(files->input);
+    }
+
+    if (c == -1) {
+        outToken.actual[0] = ':'; 
+        outToken.actual[1] = 'D';
+        strcpy(outToken.type, "SCANEOF");
         outToken.number = SCANEOF;
     }
+    else if(isalpha(c))
+    {
+        outToken=process_alpha(c, files);
+    }
+    else if(isdigit(c))
+    {
+        outToken=process_num(c,files);
+    }
+    else if(ispunct(c))
+    {
+        outToken=process_symbol(c,files);
+    }	
     else {
-	    while(c==' '||c=='\t'||c=='\n')
-	    {
-	    	array[0]=c;
-	    	array[1]='\0';
-	    	strcat(linebuff,array);
-	    	if(c=='\n')
-	    	{
-	    		fprintf(files->lis_file,"%d %s",linenum,linebuff);
-	    		linenum++;
-	    		memset(linebuff,0,sizeof(linebuff));
-	    	}
-	    	c=fgetc(files->input);
-	    }
-	    if(isalpha(c))
-	    {
-	    	outToken=process_alpha(c, files);
-	    }
-	    else if(isdigit(c))
-	    {
-	    	outToken=process_num(c,files);
-	    }
-	    else if(ispunct(c))
-	    {
-	    	outToken=process_symbol(c,files);
-	    }	
-        else {
-            outToken.actual[0] = c;
-            strcpy(outToken.type, "ERROR");
-            outToken.number = ERROR;
-        }
+        outToken.actual[0] = c;
+        strcpy(outToken.type, "ERROR");
+        outToken.number = ERROR;
     }
     
     return outToken;
@@ -100,7 +101,7 @@ token process_alpha(char c, fileStruct *files)
     // initializing our big ol table of reserved keywords
     // it's a little sparse right now
     char * uppercase_actual = malloc(sizeof(outToken.actual));
-    toUpper(&(outToken.actual), uppercase_actual);
+    toUpper(outToken.actual, uppercase_actual);
     char reserved_keywords[37][16];
     memset(reserved_keywords, '\0', sizeof(reserved_keywords));
     strcpy(reserved_keywords[START], "START");
@@ -121,7 +122,6 @@ token process_alpha(char c, fileStruct *files)
     strcpy(reserved_keywords[WHILE], "WHILE");
     int i = 0;
     for (i = 0; i < 37; i++) {
-	//printf("%s\n",outToken.actual);
        if (reserved_keywords[i][0] != '\0') {
            if (strcmp(reserved_keywords[i],uppercase_actual) == 0) {
             // we have a match
