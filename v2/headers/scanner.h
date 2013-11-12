@@ -9,7 +9,7 @@ typedef enum{
     START,
 	FINISH,
 	SCANEOF,
-    INTEGER,
+    INT,
     REAL,
     STRING,
 	INTLIT,

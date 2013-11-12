@@ -106,7 +106,7 @@ token process_alpha(char c, fileStruct *files)
     memset(reserved_keywords, '\0', sizeof(reserved_keywords));
     strcpy(reserved_keywords[START], "START");
     strcpy(reserved_keywords[FINISH], "FINISH");
-    strcpy(reserved_keywords[INTEGER], "INTEGER");
+    strcpy(reserved_keywords[INT], "INT");
     strcpy(reserved_keywords[REAL], "REAL");
     strcpy(reserved_keywords[STRING], "STRING");
     strcpy(reserved_keywords[INPUT], "INPUT");
@@ -245,6 +245,17 @@ token process_symbol(char c, fileStruct *files)
         out.actual[0] = fgetc(files->input);
         strcpy(out.type, "QUOTE");
         out.number = QUOTE;
+        // from here, we need to accept any ascii char except double quote unless preceded by a backslash
+    }
+    else if (fpeek(files->input) == '(') {
+        out.actual[0] = fgetc(files->input);
+        strcpy(out.type, "LPAREN");
+        out.number = LPAREN;
+    }
+    else if (fpeek(files->input) == ')') {
+        out.actual[0] = fgetc(files->input);
+        strcpy(out.type, "RPAREN");
+        out.number = RPAREN;
     }
     else {
         // error
