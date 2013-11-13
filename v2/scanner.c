@@ -73,7 +73,8 @@ token getToken(fileStruct *files)
         strcpy(outToken.type, "ERROR");
         outToken.number = ERROR;
     }
-    
+   
+
     return outToken;
 }
 
@@ -259,7 +260,7 @@ token process_symbol(char c, fileStruct *files)
     }
     else {
         // error
-        out.actual[1] = fgetc(files->input);
+        out.actual[0] = fgetc(files->input);
         strcpy(out.type, "ERROR");
         out.number = ERROR;
     }
