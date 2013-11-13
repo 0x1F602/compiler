@@ -73,7 +73,6 @@ token getToken(fileStruct *files)
         strcpy(outToken.type, "ERROR");
         outToken.number = ERROR;
     }
-   
 
     return outToken;
 }
@@ -103,7 +102,7 @@ token process_alpha(char c, fileStruct *files)
     // it's a little sparse right now
     char * uppercase_actual = malloc(sizeof(outToken.actual));
     toUpper(outToken.actual, uppercase_actual);
-    char reserved_keywords[37][16];
+    char reserved_keywords[39][16];
     memset(reserved_keywords, '\0', sizeof(reserved_keywords));
     strcpy(reserved_keywords[START], "START");
     strcpy(reserved_keywords[FINISH], "FINISH");
@@ -122,7 +121,7 @@ token process_alpha(char c, fileStruct *files)
     strcpy(reserved_keywords[IF], "IF");
     strcpy(reserved_keywords[WHILE], "WHILE");
     int i = 0;
-    for (i = 0; i < 37; i++) {
+    for (i = 0; i < 39; i++) {
        if (reserved_keywords[i][0] != '\0') {
            if (strcmp(reserved_keywords[i],uppercase_actual) == 0) {
             // we have a match
@@ -136,31 +135,36 @@ token process_alpha(char c, fileStruct *files)
     return outToken;
 }
 
+void read_in_number(token * t, fileStruct *files) {
+    strcpy(t->type, "INTLIT");
+    t->number = INTLIT;
+    int index = strlen(t->actual);
+    while (isdigit(fpeek(files->input))) {
+        t->actual[index] = fgetc(files->input);
+        index++;
+    }
+    // if we encounter a period, it's a real
+    if (fpeek(files->input) == '.') {
+        strcpy(t->type, "REALLIT");
+        t->number = REALLIT;
+        t->actual[index++] = fgetc(files->input);
+        while (isdigit(fpeek(files->input))) {
+            t->actual[index++] = fgetc(files->input);
+        }
+    }
+}
+
 token process_num(char c, fileStruct *files)
 {
     // shiny new token
     token out;
     wipeout(&out);
     // assume it's integer 
-    strcpy(out.type, "INTLIT");
     out.number = INTLIT;
     int index = 0; //index for out.actual assignment
     out.actual[0] = c; // assign the first one
-    index++; // accounting for above line
-    while (isdigit(fpeek(files->input))) {
-        c = fgetc(files->input);
-        out.actual[index] = c;
-        index++;
-    }
-    // if we encounter a period, it's a real
-    if (fpeek(files->input) == '.') {
-        strcpy(out.type, "REALLIT");
-        out.number = REALLIT;
-        out.actual[index++] = fgetc(files->input);
-        while (isdigit(fpeek(files->input))) {
-            out.actual[index++] = fgetc(files->input);
-        }
-    }
+    
+    read_in_number(&out, files);
 
 	strcat(linebuff,out.actual);
     return out;
@@ -229,8 +233,36 @@ token process_symbol(char c, fileStruct *files)
     }
     else if (fpeek(files->input) == '-') {
         out.actual[0] = fgetc(files->input);
-        strcpy(out.type, "MINUSOP");
-        out.number = MINUSOP;
+        // interpret "- " as minus operator
+        if (fpeek(files->input) == ' ') { 
+            strcpy(out.type, "MINUSOP");
+            out.number = MINUSOP;
+        }
+        // interpret "-letter" as negation of identifier
+        else if (isalpha(fpeek(files->input))) {
+            strcpy(out.type, "NEGATION");
+            out.number = NEGATION;
+        }
+        // interpret "-\d+" as a negative number
+        else if (isdigit(fpeek(files->input))) {
+            read_in_number(&out, files);
+        }
+        else if (fpeek(files->input) == '-') {
+            // this is a comment... 
+            fgetc(files->input);
+            while (fgetc(files->input) != '\n') {
+                // throw it all in the bit bucket
+            }
+            out.actual[0] = '\0';
+            strcpy(out.type, "Comment skipped");
+            out.number = -1;
+        }
+        else {
+            // error 
+            out.actual[0] = fgetc(files->input);
+            strcpy(out.type, "ERROR");
+            out.number = ERROR;
+        }
     }
     else if (fpeek(files->input) == '+') {
         out.actual[0] = fgetc(files->input);

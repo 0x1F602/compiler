@@ -14,7 +14,9 @@ main(int argc, char * argv[])
     unsigned int error_count = 0;
     while (!feof(file_struct.input)) {
 	    token o = getToken(&file_struct);
-        fprintf(file_struct.tmp1, "token number:\t%d\ttoken type:\t%-15s\tactual token:\t%-15s\n", o.number, o.type, o.actual);
+        if (o.number >= 0) {
+            fprintf(file_struct.tmp1, "token number:\t%d\ttoken type:\t%-15s\tactual token:\t%-15s\n", o.number, o.type, o.actual);
+        }
         if (o.number == ERROR) {
             fprintf(file_struct.lis_file, "\nError. %s not recognized.\n", o.actual);
             error_count = error_count + 1;

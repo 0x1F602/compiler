@@ -44,6 +44,7 @@ typedef enum{
 	GTESIGN,
 	EQUIVSIGN,
 	NOTEQSIGN,
+    NEGATION,
     ERROR
 } token_number;
 
