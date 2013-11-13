@@ -276,9 +276,20 @@ token process_symbol(char c, fileStruct *files)
     }
     else if (fpeek(files->input) == '"') {
         out.actual[0] = fgetc(files->input);
-        strcpy(out.type, "QUOTE");
-        out.number = QUOTE;
+        strcpy(out.type, "STRINGLIT");
+        out.number = STRINGLIT;
         // from here, we need to accept any ascii char except double quote unless preceded by a backslash
+        int index = 1;
+        while ( (!feof(files->input)) && fpeek(files->input) != '"' ) {
+            if (fpeek(files->input) == '\\') {
+                // escape sequences
+                out.actual[index++] = fgetc(files->input);
+            }
+            out.actual[index++] = fgetc(files->input);
+        }
+        if (!feof(files->input)) {
+            out.actual[index] = fgetc(files->input); // wipe out the last "
+        }
     }
     else if (fpeek(files->input) == '(') {
         out.actual[0] = fgetc(files->input);

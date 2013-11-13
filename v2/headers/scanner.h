@@ -52,7 +52,7 @@ typedef enum{
 typedef struct{
 	int number;
 	char type[20];
-	char actual[32];
+	char actual[64];
 }token;
 
 char linebuff[250];
