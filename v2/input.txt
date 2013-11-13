@@ -1,9 +1,14 @@
-REAL x = 12.34;
-WHILE ENDIF
-IF ELSE
-ENDWHILE
-1234;
-abcd;
-efg hijka242a;
-snca cajas;
-a;
+START INT x =: 0;
+REAL z = -1.234;
+INT w2 = -72;
+STRING y = "Howdy doody, buddy\\\"partner\"";
+INT a = 12 - 32 - -64 + -z;
+IF (x <= 10) THEN
+    INPUT(x, y);
+ELSE
+    WHILE (x @ < 20)
+        -- OUTPUT(x);
+        OUTPUT(z);
+    ENDWHILE
+ENDIF
+FINISH
