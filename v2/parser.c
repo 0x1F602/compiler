@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include "headers/scanner.h"
+#include "headers/parser.h"
 #include <string.h>
 
 int program(fileStruct *files)
 {
-	int retval1=0,retval2=0;
 	token intoken;
+	retval1=0;
 	intoken=getToken(files);
 	if(strcmp(intoken.type,"START")==0)
 	{
@@ -16,9 +17,9 @@ int program(fileStruct *files)
 		retval1++;
 	}
 	
-	retval2=declarelist(*files);
+	intoken=declarelist(files);
+	intoken=statementlist(files,intoken);	
 
-	intoken=getToken(files);
 	if(strcmp(intoken.type,"FINISH")==0)
     {
     }
@@ -44,18 +45,114 @@ int program(fileStruct *files)
 		}
         retval1++;
     }
-	
-	retval1=retval1+retval2;
-
 	//0 is finished with no problems
-	//if < 0, number indicates number of parsing errors.
+	//>0 if parsing errors
 	return retval1;
 }
 
-int declarelist(fileStruct *files)
+token declarelist(fileStruct *files)
 {
-
+	token intoken;
+	intoken=getToken(files);
+	
+	if(strcmp(intoken.type,"INT")==0)
+    {
+		intoken=idlist(files);
+		if(strcmp(intoken.type,"SEMICOLON")==0)
+		{
+		}
+		else
+		{
+		fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.actual);
+        retval1++;
+		}
+    }
+	else if(strcmp(intoken.type,"REAL")==0)
+	{
+		intoken=idlist(files);
+		if(strcmp(intoken.type,"SEMICOLON")==0)
+        {
+        }
+        else
+        {
+        fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.actual);
+        retval1++;
+        }
+	}
+	else if(strcmp(intoken.type,"STRING")==0)
+	{
+		intoken=idlist(files);
+		if(strcmp(intoken.type,"SEMICOLON")==0)
+        {
+        }
+        else
+        {
+        fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.actual);
+        retval1++;
+        }
+	}
+    else
+    {
+        fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+        retval1++;
+    }
+	intoken=getToken(files);
+	while((strcmp(intoken.type,"INT")==0)||(strcmp(intoken.type,"REAL")==0)||(strcmp(intoken.type,"STRING")==0))
+	{
+		if(strcmp(intoken.type,"INT")==0)
+	    {
+    	    intoken=idlist(files);
+			if(strcmp(intoken.type,"SEMICOLON")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+		        retval1++;
+			}
+  	  	}
+    	else if(strcmp(intoken.type,"REAL")==0)
+    	{
+        	intoken=idlist(files);
+            if(strcmp(intoken.type,"SEMICOLON")==0)
+            {
+            }
+            else
+            {
+                fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+                retval1++;
+            }
+    	}
+    	else if(strcmp(intoken.type,"STRING")==0)
+    	{
+        	intoken=idlist(files);
+            if(strcmp(intoken.type,"SEMICOLON")==0)
+            {
+            }
+            else
+            {
+                fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+                retval1++;
+            }
+   		}
+		intoken=getToken(files);
+	}
+	
+	return intoken;
 }
 
+token idlist(fileStruct *files)
+{
+	token intoken;
 
+	intoken=getToken(files);
+	return intoken;
+}
 
+token statementlist(fileStruct *files, token oldtoken)
+{
+	token intoken;
+	
+	intoken=getToken(files);
+	return intoken;	
+}
