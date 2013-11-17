@@ -13,7 +13,7 @@ int program(fileStruct *files)
 	}
 	else
 	{
-		fprintf(files->lis_file, "Expected START TOKEN. %s found instead.\n",intoken.actual);
+		fprintf(files->lis_file, "Expected START TOKEN. %s found instead.\n",intoken.type);
 		retval1++;
 	}
 	
@@ -25,7 +25,7 @@ int program(fileStruct *files)
     }
     else
     {
-		fprintf(files->lis_file, "Expected FINISH TOKEN. %s found instead.\n",intoken.actual);
+		fprintf(files->lis_file, "Expected FINISH TOKEN. %s found instead.\n",intoken.type);
         retval1++;
     }
 
@@ -37,7 +37,7 @@ int program(fileStruct *files)
     else
     {
         //no eof token
-		fprintf(files->lis_file, "Expected EOF TOKEN. %s found instead.\n",intoken.actual);
+		fprintf(files->lis_file, "Expected EOF TOKEN. %s found instead.\n",intoken.type);
 		fprintf(files->lis_file, "Reached expected end of program. Printing remaining code. It will not be parsed\n");
 		while(!feof(files->input))
 		{
@@ -52,6 +52,7 @@ int program(fileStruct *files)
 
 token declarelist(fileStruct *files)
 {
+	int errorflag=0;
 	token intoken;
 	intoken=getToken(files);
 	
@@ -63,7 +64,7 @@ token declarelist(fileStruct *files)
 		}
 		else
 		{
-		fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.actual);
+		fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.type);
         retval1++;
 		}
     }
@@ -75,7 +76,7 @@ token declarelist(fileStruct *files)
         }
         else
         {
-        fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.actual);
+        fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.type);
         retval1++;
         }
 	}
@@ -87,16 +88,20 @@ token declarelist(fileStruct *files)
         }
         else
         {
-        fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.actual);
+        fprintf(files->lis_file, "Expected a semicolon. %s found instead.\n",intoken.type);
         retval1++;
         }
 	}
     else
     {
-        fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+		errorflag=1;
+        fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.type);
         retval1++;
     }
-	intoken=getToken(files);
+	if(errorflag==0)
+	{
+		intoken=getToken(files);
+	}
 	while((strcmp(intoken.type,"INT")==0)||(strcmp(intoken.type,"REAL")==0)||(strcmp(intoken.type,"STRING")==0))
 	{
 		if(strcmp(intoken.type,"INT")==0)
@@ -107,7 +112,7 @@ token declarelist(fileStruct *files)
 			}
 			else
 			{
-				fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+				fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.type);
 		        retval1++;
 			}
   	  	}
@@ -119,7 +124,7 @@ token declarelist(fileStruct *files)
             }
             else
             {
-                fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+                fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.type);
                 retval1++;
             }
     	}
@@ -131,7 +136,7 @@ token declarelist(fileStruct *files)
             }
             else
             {
-                fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.actual);
+                fprintf(files->lis_file, "Expected at least one declaration. %s found instead.\n",intoken.type);
                 retval1++;
             }
    		}
@@ -143,9 +148,44 @@ token declarelist(fileStruct *files)
 
 token idlist(fileStruct *files)
 {
+	int errorflag=0;
 	token intoken;
-
+	
 	intoken=getToken(files);
+	
+	if(strcmp(intoken.type,"ID")==0)
+	{
+	}
+	else
+	{
+		fprintf(files->lis_file, "Expected at least one ID. %s found instead.\n",intoken.type);
+		retval1++;
+		errorflag=1;
+	}
+	if (errorflag==0)
+	{
+		intoken=getToken(files);
+	}
+	while(strcmp(intoken.type,"COMMA")==0)
+	{
+		errorflag=0;
+		intoken=getToken(files);
+		if(strcmp(intoken.type,"ID")==0)
+		{
+		}
+		else
+		{
+			fprintf(files->lis_file, "Expected an ID. %s found instead.\n",intoken.type);
+        	retval1++;
+			errorflag=1;
+		}
+		if(errorflag==0)
+		{
+		intoken=getToken(files);
+		}
+		
+	}
+	
 	return intoken;
 }
 
