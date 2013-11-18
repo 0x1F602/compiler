@@ -6,6 +6,8 @@ token declarelist(fileStruct*);
 token idlist(fileStruct*);
 token statementlist(fileStruct*,token);
 token outputlist(fileStruct*);
+token expression(fileStruct*);
+
 
 int retval1;
 

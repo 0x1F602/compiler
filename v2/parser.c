@@ -192,90 +192,138 @@ token idlist(fileStruct *files)
 token statementlist(fileStruct *files, token oldtoken)
 {
 	token intoken;
-	
-	if(strcmp(oldtoken.type,"INPUT")==0)
+
+	intoken=oldtoken;
+	while(strcmp(intoken.type,"FINISH")!=0)
 	{
-		intoken=getToken(files);
-		if(strcmp(intoken.type,"LPAREN")==0)
+		if(strcmp(intoken.type,"INPUT")==0)
+		{
+			intoken=getToken(files);
+			if(strcmp(intoken.type,"LPAREN")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
+				retval1++;
+			}
+			intoken=idlist(files);
+			if(strcmp(intoken.type,"RPAREN")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected a ). %s found instead.\n",intoken.type);
+				retval1++;
+			}
+			intoken=getToken(files);
+			if(strcmp(intoken.type,"SEMICOLON")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
+				retval1++;
+			}
+			intoken=getToken(files);
+			}
+		else if(strcmp(intoken.type,"OUTPUT")==0)
+		{
+			intoken=getToken(files);
+			if(strcmp(intoken.type,"LPAREN")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
+				retval1++;
+			}
+			intoken=outputlist(files);
+			intoken=getToken(files);
+			if(strcmp(intoken.type,"RPAREN")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected a ). %s found instead.\n",intoken.type);
+				retval1++;
+			}
+			intoken=getToken(files);
+			if(strcmp(intoken.type,"SEMICOLON")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
+				retval1++;
+			}
+			intoken=getToken(files);
+		}
+		else if(strcmp(intoken.type,"ID")==0)
+		{
+		}
+		else if(strcmp(intoken.type,"IF")==0)
+		{
+		}
+		else if(strcmp(intoken.type,"WHILE")==0)
 		{
 		}
 		else
 		{
-			fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
-            retval1++;
-
+			intoken=getToken(files);
 		}
-		intoken=idlist(files);
-		if(strcmp(intoken.type,"RPAREN")==0)
-		{
-		}
-		else
-		{
-			fprintf(files->lis_file, "Expected a ). %s found instead.\n",intoken.type);
-            retval1++;
-		}
-		intoken=getToken(files);
-		if(strcmp(intoken.type,"SEMICOLON")==0)
-		{
-		}
-		else
-		{
-			fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
-            retval1++;
-		}
-		intoken=getToken(files);
 	}
-	else if(strcmp(oldtoken.type,"OUTPUT")==0)
-	{
-		intoken=getToken(files);
-        if(strcmp(intoken.type,"LPAREN")==0)
-        {
-        }
-        else
-        {
-            fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
-            retval1++;
-
-        }
-        intoken=outputlist(files);
-        if(strcmp(intoken.type,"RPAREN")==0)
-        {
-        }
-        else
-        {
-            fprintf(files->lis_file, "Expected a ). %s found instead.\n",intoken.type);
-            retval1++;
-        }
-        intoken=getToken(files);
-        if(strcmp(intoken.type,"SEMICOLON")==0)
-        {
-        }
-        else
-        {
-            fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
-            retval1++;
-        }
-        intoken=getToken(files);
-	}
-	else if(strcmp(oldtoken.type,"ID")==0)
-	{
-	}
-	else if(strcmp(oldtoken.type,"IF")==0)
-	{
-	}
-	else if(strcmp(oldtoken.type,"WHILE")==0)
-	{
-	}
-	else
-	{
-	}
-
 	return intoken;	
 }
 
 
 token outputlist(fileStruct *files)
 {
+	token intoken;
+
+	intoken=expression(files);
+	intoken=getToken(files);
+	while(strcmp(intoken.type,"COMMA")==0)
+    {
+		intoken=expression(files);
+    }
+
+	return intoken;
+}
+
+token expression(fileStruct *files)
+{
+	token intoken;
+
+	intoken=getToken(files);
+	if(strcmp(intoken.type,"NEGATION")==0)
+	{
+		intoken=getToken(files);
+	}
+	if(strcmp(intoken.type,"PLUSOP")==0||strcmp(intoken.type,"MINUSOP")==0||strcmp(intoken.type,"MULTOP")==0||strcmp(intoken.type,"DIVOP")==0||strcmp(intoken.type,"EXPOP")==0)
+	{
+		intoken=expression(files);
+		intoken=expression(files);
+	}	
+	else if(strcmp(intoken.type,"INTLIT")==0)
+	{
+	}
+	else if(strcmp(intoken.type,"REALLIT")==0)
+    {
+    }
+	else if(strcmp(intoken.type,"ID")==0)
+    {
+    }
+	else
+	{
+		fprintf(files->lis_file, "Expected a MATHOP, INTLIT, REALLIT, or ID. %s found instead.\n",intoken.type);
+        retval1++;
+	}
+
+	return intoken;
+
+
+
 }
 
 
