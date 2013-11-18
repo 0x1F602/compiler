@@ -261,6 +261,33 @@ token statementlist(fileStruct *files, token oldtoken)
 		}
 		else if(strcmp(intoken.type,"ID")==0)
 		{
+			intoken=getToken(files);
+			if (strcmp(intoken.type,"ASSIGN")==0)
+			{
+			}
+			else
+			{
+				fprintf(files->lis_file, "Expected a =. %s found instead.\n",intoken.type);
+                retval1++;
+			}
+			intoken=getToken(files);
+			if (strcmp(intoken.type,"STRINGLIT")==0)
+			{
+			}
+			else
+			{
+				intoken=expression2(files,intoken);
+			}
+			intoken=getToken(files);
+			if (strcmp(intoken.type,"SEMICOLON")==0)
+            {
+            }
+            else
+            {
+                fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
+                retval1++;
+            }
+			
 		}
 		else if(strcmp(intoken.type,"IF")==0)
 		{
@@ -270,6 +297,7 @@ token statementlist(fileStruct *files, token oldtoken)
 		}
 		else
 		{
+			//will keep pushing untiil it can at least get to a finish token
 			intoken=getToken(files);
 		}
 	}
@@ -326,7 +354,40 @@ token expression(fileStruct *files)
 
 }
 
+token expression2(fileStruct *files, token oldtoken)
+{
+    token intoken;
 
+    intoken=oldtoken;
+    if(strcmp(intoken.type,"NEGATION")==0)
+    {
+        intoken=getToken(files);
+    }
+    if(strcmp(intoken.type,"PLUSOP")==0||strcmp(intoken.type,"MINUSOP")==0||strcmp(intoken.type,"MULTOP")==0||strcmp(intoken.type,"DIVOP")==0||strcmp(intoken.type,"EXPOP")==0)
+    {
+        intoken=expression(files);
+        intoken=expression(files);
+    }
+    else if(strcmp(intoken.type,"INTLIT")==0)
+    {
+    }
+    else if(strcmp(intoken.type,"REALLIT")==0)
+    {
+    }
+    else if(strcmp(intoken.type,"ID")==0)
+    {
+    }
+    else
+    {
+        fprintf(files->lis_file, "Expected a MATHOP, INTLIT, REALLIT, or ID. %s found instead.\n",intoken.type);
+        retval1++;
+    }
+
+    return intoken;
+
+
+
+}
 
 
 
