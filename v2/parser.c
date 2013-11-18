@@ -193,6 +193,94 @@ token statementlist(fileStruct *files, token oldtoken)
 {
 	token intoken;
 	
-	intoken=getToken(files);
+	if(strcmp(oldtoken.type,"INPUT")==0)
+	{
+		intoken=getToken(files);
+		if(strcmp(intoken.type,"LPAREN")==0)
+		{
+		}
+		else
+		{
+			fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
+            retval1++;
+
+		}
+		intoken=idlist(files);
+		if(strcmp(intoken.type,"RPAREN")==0)
+		{
+		}
+		else
+		{
+			fprintf(files->lis_file, "Expected a ). %s found instead.\n",intoken.type);
+            retval1++;
+		}
+		intoken=getToken(files);
+		if(strcmp(intoken.type,"SEMICOLON")==0)
+		{
+		}
+		else
+		{
+			fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
+            retval1++;
+		}
+		intoken=getToken(files);
+	}
+	else if(strcmp(oldtoken.type,"OUTPUT")==0)
+	{
+		intoken=getToken(files);
+        if(strcmp(intoken.type,"LPAREN")==0)
+        {
+        }
+        else
+        {
+            fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
+            retval1++;
+
+        }
+        intoken=outputlist(files);
+        if(strcmp(intoken.type,"RPAREN")==0)
+        {
+        }
+        else
+        {
+            fprintf(files->lis_file, "Expected a ). %s found instead.\n",intoken.type);
+            retval1++;
+        }
+        intoken=getToken(files);
+        if(strcmp(intoken.type,"SEMICOLON")==0)
+        {
+        }
+        else
+        {
+            fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
+            retval1++;
+        }
+        intoken=getToken(files);
+	}
+	else if(strcmp(oldtoken.type,"ID")==0)
+	{
+	}
+	else if(strcmp(oldtoken.type,"IF")==0)
+	{
+	}
+	else if(strcmp(oldtoken.type,"WHILE")==0)
+	{
+	}
+	else
+	{
+	}
+
 	return intoken;	
 }
+
+
+token outputlist(fileStruct *files)
+{
+}
+
+
+
+
+
+
+
