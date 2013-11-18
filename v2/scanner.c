@@ -74,6 +74,8 @@ token getToken(fileStruct *files)
         outToken.number = ERROR;
     }
 
+    fprintf(files->tmp1, "\nTOKEN %s\nTYPE %s\nNUMBER %d\n", outToken.actual, outToken.type, outToken.number);
+
     return outToken;
 }
 

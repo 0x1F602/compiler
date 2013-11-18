@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <string.h>
 #include "headers/scanner.h"
 #include "headers/parser.h"
-#include <string.h>
+
+int lex_errors = 0;
 
 int program(fileStruct *files)
 {
@@ -45,8 +47,26 @@ int program(fileStruct *files)
 		}
         retval1++;
     }
+
 	//0 is finished with no problems
 	//>0 if parsing errors
+    if (retval1 > 0) {
+        if (retval1 > 1) {
+            fprintf(files->lis_file, "\n%d parser errors found\n", retval1);
+        }
+        else {
+            fprintf(files->lis_file, "\n%d parser error found\n", retval1);
+        }
+    }
+    if (lex_errors > 0) {
+        if (lex_errors > 1) {
+            fprintf(files->lis_file, "\n%d lexical errors found\n", retval1);
+        }
+        else {
+            fprintf(files->lis_file, "\n%d lexical error found\n", retval1);
+        }
+    }
+
 	return retval1;
 }
 
@@ -194,7 +214,7 @@ token statementlist(fileStruct *files, token oldtoken)
 	token intoken;
 
 	intoken=oldtoken;
-	while(strcmp(intoken.type,"FINISH")!=0)
+	while(strcmp(intoken.type,"FINISH")!=0) // || (strcmp(intoken.type, "SCANEOF")) != 0)
 	{
 		if(strcmp(intoken.type,"INPUT")==0)
 		{
@@ -287,7 +307,7 @@ token statementlist(fileStruct *files, token oldtoken)
                 fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
                 retval1++;
             }
-			
+			intoken=getToken(files);
 		}
 		else if(strcmp(intoken.type,"IF")==0)
 		{
@@ -331,6 +351,7 @@ token statementlist(fileStruct *files, token oldtoken)
             }
 			intoken=getToken(files);
 			intoken=statementlist3(files,intoken);
+			intoken=getToken(files);
 		}
 		else if(strcmp(intoken.type,"WHILE")==0)
 		{
@@ -355,10 +376,15 @@ token statementlist(fileStruct *files, token oldtoken)
             }
 			intoken=getToken(files);
 			intoken=statementlist4(files,intoken);
+			intoken=getToken(files);
 		}
 		else
 		{
 			//will keep pushing untiil it can at least get to a finish token
+			if (intoken.number == ERROR) {
+			    fprintf(files->lis_file, "Lexical error found: %s\n", intoken.actual);
+                lex_errors += 1;
+            }
 			intoken=getToken(files);
 		}
 	}
@@ -370,7 +396,7 @@ token statementlist2(fileStruct *files, token oldtoken)
 	token intoken;
 
 	intoken=oldtoken;
-	while(strcmp(intoken.type,"ELSE")!=0)
+	while(strcmp(intoken.type,"ELSE")!=0) //|| (strcmp(intoken.type, "SCANEOF")) != 0)
 	{
 		if(strcmp(intoken.type,"INPUT")==0)
 		{
@@ -463,7 +489,7 @@ token statementlist2(fileStruct *files, token oldtoken)
                 fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
                 retval1++;
             }
-			
+			intoken=getToken(files);
 		}
 		else if(strcmp(intoken.type,"IF")==0)
 		{
@@ -546,7 +572,7 @@ token statementlist3(fileStruct *files, token oldtoken)
 	token intoken;
 
 	intoken=oldtoken;
-	while(strcmp(intoken.type,"ENDIF")!=0)
+	while(strcmp(intoken.type,"ENDIF")!=0 )// || (strcmp(intoken.type, "SCANEOF")) != 0)
 	{
 		if(strcmp(intoken.type,"INPUT")==0)
 		{
@@ -639,7 +665,7 @@ token statementlist3(fileStruct *files, token oldtoken)
                 fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
                 retval1++;
             }
-			
+			intoken=getToken(files);
 		}
 		else if(strcmp(intoken.type,"IF")==0)
 		{
@@ -722,7 +748,7 @@ token statementlist4(fileStruct *files, token oldtoken)
 	token intoken;
 
 	intoken=oldtoken;
-	while(strcmp(intoken.type,"ENDWHILE")!=0)
+	while(strcmp(intoken.type,"ENDWHILE")!=0)// || intoken.number != SCANEOF)
 	{
 		if(strcmp(intoken.type,"INPUT")==0)
 		{

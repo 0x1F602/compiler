@@ -5,7 +5,7 @@
 #include "headers/scanner.h"
 #include "headers/parser.h"
 
-main(int argc, char * argv[])
+int main(int argc, char * argv[])
 {
 	int parseError=0;
 	fileStruct file_struct;
@@ -14,4 +14,5 @@ main(int argc, char * argv[])
 	file_struct = openfile(argc, argv[1]);
 	parseError=program(&file_struct);
 
+    return 0;
 }
