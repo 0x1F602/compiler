@@ -5,9 +5,13 @@ int program(fileStruct*);
 token declarelist(fileStruct*);
 token idlist(fileStruct*);
 token statementlist(fileStruct*,token);
+token statementlist2(fileStruct*,token);
+token statementlist3(fileStruct*,token);
+token statementlist4(fileStruct*,token);
 token outputlist(fileStruct*);
 token expression(fileStruct*);
 token expression2(fileStruct*, token);
+token condition(fileStruct*);
 
 int retval1;
 
