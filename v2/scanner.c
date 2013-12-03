@@ -233,6 +233,17 @@ token process_symbol(char c, fileStruct *files)
         strcpy(out.type, "DIVOP");
         out.number = DIVOP;
     }
+	else if(fpeek(files->input) == '!')
+	{
+		// this is a comment...
+        fgetc(files->input);
+        while (fgetc(files->input) != '\n') {
+            // throw it all in the bit bucket
+        }
+        out.actual[0] = '\0';
+        strcpy(out.type, "Comment skipped");
+        out.number = -1;
+	}
     else if (fpeek(files->input) == '-') {
         out.actual[0] = fgetc(files->input);
         // interpret "- " as minus operator

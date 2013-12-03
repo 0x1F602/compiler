@@ -1,3 +1,7 @@
+//Parser evaluates expressions in prefix notation
+//! or -- are both comments according to this parser!
+
+
 #include <stdio.h>
 #include <string.h>
 #include "headers/scanner.h"
@@ -259,7 +263,6 @@ token statementlist(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -441,7 +444,6 @@ token statementlist2(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -617,7 +619,6 @@ token statementlist3(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -793,7 +794,6 @@ token statementlist4(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
