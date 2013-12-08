@@ -1,3 +1,7 @@
+//Parser evaluates expressions in prefix notation
+//! or -- are both comments according to this parser!
+
+
 #include <stdio.h>
 #include <string.h>
 #include "headers/scanner.h"
@@ -7,6 +11,8 @@ int lex_errors = 0;
 
 int program(fileStruct *files)
 {
+	symbind=0;
+	fprintf(files->tmp1,"#include <stdio.h>\n main()\n{\n");
 	token intoken;
 	retval1=0;
 	intoken=getToken(files);
@@ -34,7 +40,7 @@ int program(fileStruct *files)
 	intoken=getToken(files);
 	if(strcmp(intoken.type,"SCANEOF")==0)
     {
-	
+		fprintf(files->tmp2,"}:");
     }
     else
     {
@@ -78,7 +84,8 @@ token declarelist(fileStruct *files)
 	
 	if(strcmp(intoken.type,"INT")==0)
     {
-		intoken=idlist(files);
+		fprintf(files->tmp1,"int ");
+		intoken=idlist(files,0,intoken);
 		if(strcmp(intoken.type,"SEMICOLON")==0)
 		{
 		}
@@ -90,7 +97,8 @@ token declarelist(fileStruct *files)
     }
 	else if(strcmp(intoken.type,"REAL")==0)
 	{
-		intoken=idlist(files);
+		fprintf(files->tmp1,"float ");
+		intoken=idlist(files,0,intoken);
 		if(strcmp(intoken.type,"SEMICOLON")==0)
         {
         }
@@ -102,7 +110,8 @@ token declarelist(fileStruct *files)
 	}
 	else if(strcmp(intoken.type,"STRING")==0)
 	{
-		intoken=idlist(files);
+		fprintf(files->tmp1,"char ");
+		intoken=idlist(files,2,intoken);
 		if(strcmp(intoken.type,"SEMICOLON")==0)
         {
         }
@@ -126,7 +135,8 @@ token declarelist(fileStruct *files)
 	{
 		if(strcmp(intoken.type,"INT")==0)
 	    {
-    	    intoken=idlist(files);
+			fprintf(files->tmp1,"int ");
+    	    intoken=idlist(files,0,intoken);
 			if(strcmp(intoken.type,"SEMICOLON")==0)
 			{
 			}
@@ -138,7 +148,8 @@ token declarelist(fileStruct *files)
   	  	}
     	else if(strcmp(intoken.type,"REAL")==0)
     	{
-        	intoken=idlist(files);
+			fprintf(files->tmp1,"float ");
+        	intoken=idlist(files,0,intoken);
             if(strcmp(intoken.type,"SEMICOLON")==0)
             {
             }
@@ -150,7 +161,8 @@ token declarelist(fileStruct *files)
     	}
     	else if(strcmp(intoken.type,"STRING")==0)
     	{
-        	intoken=idlist(files);
+			fprintf(files->tmp1,"char ");
+        	intoken=idlist(files,2,intoken);
             if(strcmp(intoken.type,"SEMICOLON")==0)
             {
             }
@@ -166,15 +178,70 @@ token declarelist(fileStruct *files)
 	return intoken;
 }
 
-token idlist(fileStruct *files)
+
+//flag=0 for declare list
+//flag=1 for input stmt
+//flag=2 for char declare
+token idlist(fileStruct *files, int flag,token intoken)
 {
 	int errorflag=0;
-	token intoken;
-	
+	int type=-1;
+	char tmpbuff[200];
+	char outbuffer[200];
+
+	memset(tmpbuff, '\0', sizeof(tmpbuff) );	
+	memset(tmpbuff, '\0', sizeof(outbuffer) );
+	if(strcmp(intoken.type,"INT")==0)
+	{
+		type=0;
+	}
+	else if(strcmp(intoken.type,"REAL")==0)
+    {
+        type=1;
+    }
+	else if(strcmp(intoken.type,"STRING")==0)
+    {
+        type=2;
+    }
 	intoken=getToken(files);
 	
 	if(strcmp(intoken.type,"ID")==0)
 	{
+		if (flag==0)
+			fprintf(files->tmp1, "%s=0",intoken.actual);
+		if (flag==2)
+			fprintf(files->tmp1, "%s[100]",intoken.actual);
+		if(flag==0||flag==2)
+		{
+			strcpy(symboltable[symbind].name,intoken.actual);
+			symboltable[symbind].type=type;
+			symbind++;	
+		}
+		if (flag==1)
+		{
+			type=getType(intoken.actual);
+			if (type==0)
+			{
+				memset(tmpbuff, '\0', sizeof(tmpbuff) );
+				fprintf(files->tmp2,"\"%%d ");
+				sprintf(tmpbuff,", %s",intoken.actual);
+				strcpy(outbuffer,tmpbuff);
+			}
+			else if (type==1)
+			{
+				memset(tmpbuff, '\0', sizeof(tmpbuff) );
+				fprintf(files->tmp2,"\"%%f ");
+				sprintf(tmpbuff,", %s",intoken.actual);
+                strcpy(outbuffer,tmpbuff);
+			}
+			else if (type==2)
+			{
+				memset(tmpbuff, '\0', sizeof(tmpbuff) );
+				fprintf(files->tmp2,"\"%%s ");
+				sprintf(tmpbuff,", %s",intoken.actual);
+                strcpy(outbuffer,tmpbuff);
+			}
+		}
 	}
 	else
 	{
@@ -192,6 +259,41 @@ token idlist(fileStruct *files)
 		intoken=getToken(files);
 		if(strcmp(intoken.type,"ID")==0)
 		{
+			if (flag==0)
+				fprintf(files->tmp1,",%s=0",intoken.actual);
+			if(flag==2)
+				fprintf(files->tmp1,",%s[100]",intoken.actual);
+			if(flag==0||flag==2)
+ 	        {
+    	        strcpy(symboltable[symbind].name,intoken.actual);
+        	    symboltable[symbind].type=type;
+            	symbind++;
+        	}
+			if (flag==1)
+       		{	
+            	type=getType(intoken.actual);
+	            if (type==0)
+    	        {
+        	        fprintf(files->tmp2,"%%d ");
+            	    sprintf(tmpbuff,", %s",intoken.actual);
+               		strcat(outbuffer,tmpbuff);
+	                memset(tmpbuff, '\0', sizeof(tmpbuff) );
+    	        }
+        	    else if (type==1)
+           		{
+                	fprintf(files->tmp2,"%%f ");
+	                sprintf(tmpbuff,", %s",intoken.actual);
+    	            strcat(outbuffer,tmpbuff);
+        	        memset(tmpbuff, '\0', sizeof(tmpbuff) );
+            	}
+	            else if (type==2)
+    	        {
+        	        fprintf(files->tmp2,"%%s ");
+            	    sprintf(tmpbuff,", %s",intoken.actual);
+                	strcat(outbuffer,tmpbuff);
+	                memset(tmpbuff, '\0', sizeof(tmpbuff) );
+    	        }
+        	}
 		}
 		else
 		{
@@ -205,9 +307,18 @@ token idlist(fileStruct *files)
 		}
 		
 	}
-	
+	if (flag==1)
+	{
+		fprintf(files->tmp2,"\"%s",outbuffer);
+	}
+	if (flag==0||flag==2)
+	{
+		fprintf(files->tmp1,";\n");	
+	}
 	return intoken;
 }
+
+
 
 token statementlist(fileStruct *files, token oldtoken)
 {
@@ -227,7 +338,8 @@ token statementlist(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
 				retval1++;
 			}
-			intoken=idlist(files);
+			fprintf(files->tmp2,"scanf(");
+			intoken=idlist(files,1,intoken);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -245,6 +357,7 @@ token statementlist(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
 				retval1++;
 			}
+			fprintf(files->tmp2,");\n");
 			intoken=getToken(files);
 			}
 		else if(strcmp(intoken.type,"OUTPUT")==0)
@@ -259,7 +372,6 @@ token statementlist(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -409,7 +521,8 @@ token statementlist2(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
 				retval1++;
 			}
-			intoken=idlist(files);
+			fprintf(files->tmp2,"scanf(");
+			intoken=idlist(files,1,intoken);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -427,6 +540,7 @@ token statementlist2(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
 				retval1++;
 			}
+			fprintf(files->tmp2,");\n");
 			intoken=getToken(files);
 			}
 		else if(strcmp(intoken.type,"OUTPUT")==0)
@@ -441,7 +555,6 @@ token statementlist2(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -585,7 +698,8 @@ token statementlist3(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
 				retval1++;
 			}
-			intoken=idlist(files);
+			fprintf(files->tmp2,"scanf(");
+			intoken=idlist(files,1,intoken);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -603,6 +717,7 @@ token statementlist3(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
 				retval1++;
 			}
+			fprintf(files->tmp2,");\n");
 			intoken=getToken(files);
 			}
 		else if(strcmp(intoken.type,"OUTPUT")==0)
@@ -617,7 +732,6 @@ token statementlist3(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -761,7 +875,8 @@ token statementlist4(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a (. %s found instead.\n",intoken.type);
 				retval1++;
 			}
-			intoken=idlist(files);
+			fprintf(files->tmp2,"scanf(");
+			intoken=idlist(files,1,intoken);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -779,6 +894,7 @@ token statementlist4(fileStruct *files, token oldtoken)
 				fprintf(files->lis_file, "Expected a ;. %s found instead.\n",intoken.type);
 				retval1++;
 			}
+			fprintf(files->tmp2,");\n");
 			intoken=getToken(files);
 			}
 		else if(strcmp(intoken.type,"OUTPUT")==0)
@@ -793,7 +909,6 @@ token statementlist4(fileStruct *files, token oldtoken)
 				retval1++;
 			}
 			intoken=outputlist(files);
-			intoken=getToken(files);
 			if(strcmp(intoken.type,"RPAREN")==0)
 			{
 			}
@@ -1041,5 +1156,24 @@ token condition(fileStruct *files)
 	return intoken;
 }
 
+int getType(char *name)
+{
+	int endflag=0;
+	int scanindex=0;
+	int returnval=-1;
 
+	while(scanindex<symbind && endflag==0)
+	{
+		if(strcmp(name,symboltable[scanindex].name)==0)
+		{
+			endflag=1;
+			returnval=symboltable[scanindex].type;
+		}
+		else
+		{
+			scanindex++;
+		}
+	}
+	return returnval;
+}
 

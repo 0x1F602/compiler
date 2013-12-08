@@ -1,3 +1,9 @@
+//Group 4 Compiler
+//Ian Wlodarczyk
+//Patrik Natali
+//Mike Hetzel
+
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
